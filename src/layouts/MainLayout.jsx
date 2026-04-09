@@ -1,4 +1,5 @@
 import {
+  ChatCircleDots,
   House,
   Moon,
   ShieldCheck,
@@ -26,6 +27,7 @@ export function MainLayout() {
     { to: '/products', label: 'Shop', icon: ShoppingBagOpen },
     { to: '/basket', label: 'Basket', icon: ShoppingBag },
     ...(hasAdminAccess ? [{ to: '/admin', label: 'Admin', icon: ShieldCheck }] : []),
+    ...(hasAdminAccess ? [{ to: '/admin/contacts', label: 'Contacts', icon: ChatCircleDots }] : []),
     ...(isSuperadmin ? [{ to: '/admin/users', label: 'Admins', icon: UsersThree }] : []),
   ]
 

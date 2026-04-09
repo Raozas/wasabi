@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AdminRoute } from '../components/auth/AdminRoute'
 import { SuperadminRoute } from '../components/auth/SuperadminRoute'
 import { MainLayout } from '../layouts/MainLayout'
+import { AdminContactsPage } from '../pages/AdminContactsPage'
 import { AdminDashboardPage } from '../pages/AdminDashboardPage'
 import { AdminProductImportPage } from '../pages/AdminProductImportPage'
 import { AdminSettingsPage } from '../pages/AdminSettingsPage'
@@ -23,6 +24,7 @@ export function AppRouter() {
         <Route path="home" element={<Navigate to="/" replace />} />
         <Route element={<AdminRoute />}>
           <Route path="admin" element={<AdminDashboardPage />} />
+          <Route path="admin/contacts" element={<AdminContactsPage />} />
           <Route path="admin/products/import" element={<AdminProductImportPage />} />
           <Route path="admin/settings" element={<AdminSettingsPage />} />
         </Route>

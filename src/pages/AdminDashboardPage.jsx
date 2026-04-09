@@ -1,6 +1,5 @@
 import {
   CheckCircle,
-  ChatCircleDots,
   NotePencil,
   Package,
   Plus,
@@ -19,10 +18,6 @@ import {
   listProducts,
   updateProduct,
 } from '../services/firestore/products'
-import {
-  listPurchaseRequests,
-  updatePurchaseRequestStatus,
-} from '../services/firestore/purchase-requests'
 import { uploadProductImage } from '../services/storage/product-images'
 import styles from './AdminDashboardPage.module.css'
 
@@ -37,26 +32,16 @@ const INITIAL_PRODUCT_FORM = {
 
 export function AdminDashboardPage() {
   const [products, setProducts] = useState([])
-  const [purchaseRequests, setPurchaseRequests] = useState([])
   const [loadingProducts, setLoadingProducts] = useState(true)
-  const [loadingRequests, setLoadingRequests] = useState(true)
   const [savingProducts, setSavingProducts] = useState(false)
-  const [savingRequests, setSavingRequests] = useState(false)
   const [productError, setProductError] = useState('')
-  const [requestError, setRequestError] = useState('')
   const [productSuccess, setProductSuccess] = useState('')
-  const [requestSuccess, setRequestSuccess] = useState('')
   const [editingProductId, setEditingProductId] = useState(null)
   const [productForm, setProductForm] = useState(INITIAL_PRODUCT_FORM)
   const [imageFile, setImageFile] = useState(null)
 
   useEffect(() => {
-    async function initializeDashboard() {
-      await loadProducts()
-      await loadPurchaseRequests()
-    }
-
-    void initializeDashboard()
+    void loadProducts()
   }, [])
 
   async function loadProducts() {
@@ -70,20 +55,6 @@ export function AdminDashboardPage() {
       setProductError(error instanceof Error ? error.message : 'Failed to load products.')
     } finally {
       setLoadingProducts(false)
-    }
-  }
-
-  async function loadPurchaseRequests() {
-    setLoadingRequests(true)
-    setRequestError('')
-
-    try {
-      const nextRequests = await listPurchaseRequests()
-      setPurchaseRequests(nextRequests)
-    } catch (error) {
-      setRequestError(error instanceof Error ? error.message : 'Failed to load requests.')
-    } finally {
-      setLoadingRequests(false)
     }
   }
 
@@ -176,28 +147,12 @@ export function AdminDashboardPage() {
     }
   }
 
-  async function handleRequestStatus(requestId, status) {
-    setSavingRequests(true)
-    setRequestError('')
-    setRequestSuccess('')
-
-    try {
-      await updatePurchaseRequestStatus(requestId, status)
-      await loadPurchaseRequests()
-      setRequestSuccess(status === 'contacted' ? 'Request marked as contacted.' : 'Request updated.')
-    } catch (error) {
-      setRequestError(error instanceof Error ? error.message : 'Failed to update request.')
-    } finally {
-      setSavingRequests(false)
-    }
-  }
-
   return (
     <section className={styles.page}>
       <div className={styles.hero}>
         <span className={styles.eyebrow}>Admin area</span>
-        <h2 className={styles.title}>Management dashboard</h2>
-        <p className={styles.copy}>Manage storefront products and customer requests.</p>
+        <h2 className={styles.title}>Product management</h2>
+        <p className={styles.copy}>Manage storefront products and inventory from one place.</p>
       </div>
 
       <section className={styles.sectionBlock}>
@@ -419,88 +374,6 @@ export function AdminDashboardPage() {
             ) : null}
           </section>
         </div>
-      </section>
-
-      <section className={styles.sectionBlock}>
-        <div className={styles.blockHeader}>
-          <span className={styles.blockKicker}>
-            <ChatCircleDots size={16} weight="fill" />
-            Requests
-          </span>
-          <h3>Customer buy requests</h3>
-        </div>
-
-        <section className={styles.card}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <span className={styles.sectionKicker}>
-                <ChatCircleDots size={16} weight="fill" />
-                Leads
-              </span>
-              <h3>Recent customer contacts</h3>
-            </div>
-            <span className={styles.count}>{purchaseRequests.length}</span>
-          </div>
-
-          {requestError ? <p className={styles.error}>{requestError}</p> : null}
-          {requestSuccess ? <p className={styles.success}>{requestSuccess}</p> : null}
-          {loadingRequests ? <div className={styles.state}>Loading requests...</div> : null}
-          {!loadingRequests && purchaseRequests.length === 0 ? (
-            <div className={styles.state}>No purchase requests yet.</div>
-          ) : null}
-
-          {!loadingRequests && purchaseRequests.length > 0 ? (
-            <div className={styles.itemList}>
-              {purchaseRequests.map((request) => (
-                <article key={request.id} className={styles.itemCard}>
-                  <div className={styles.mediaSummary}>
-                    <div className={styles.previewFallback}>
-                      <ChatCircleDots size={22} weight="duotone" />
-                    </div>
-
-                    <div className={styles.itemInfo}>
-                      <div className={styles.itemTop}>
-                        <strong>{request.customerName || 'Unnamed customer'}</strong>
-                        <span className={styles.uidText}>{request.contactInfo}</span>
-                      </div>
-                      <p>
-                        {request.instagramUsername
-                          ? `Instagram: ${request.instagramUsername}`
-                          : 'No Instagram username provided.'}
-                      </p>
-                      <div className={styles.metaRow}>
-                        <span className={styles.category}>{request.totalItems} items</span>
-                        <span className={styles.category}>{formatPrice(request.totalPrice)}</span>
-                        <span
-                          className={
-                            request.status === 'contacted'
-                              ? styles.statusAvailable
-                              : styles.statusHidden
-                          }
-                        >
-                          {request.status}
-                        </span>
-                      </div>
-                      <pre className={styles.requestSummary}>{request.orderSummary}</pre>
-                    </div>
-                  </div>
-
-                  <div className={styles.actions}>
-                    <button
-                      type="button"
-                      className={styles.inlineButton}
-                      onClick={() => handleRequestStatus(request.id, 'contacted')}
-                      disabled={savingRequests || request.status === 'contacted'}
-                    >
-                      <CheckCircle size={16} weight="bold" />
-                      Mark contacted
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : null}
-        </section>
       </section>
     </section>
   )

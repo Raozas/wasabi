@@ -43,3 +43,9 @@ export async function createPurchaseRequest(input) {
 export async function updatePurchaseRequestStatus(requestId, status) {
   await updateDoc(purchaseRequestDocument(requestId), { status })
 }
+
+export async function updatePurchaseRequestNotes(requestId, notes) {
+  await updateDoc(purchaseRequestDocument(requestId), {
+    notes: String(notes ?? '').trim(),
+  })
+}
