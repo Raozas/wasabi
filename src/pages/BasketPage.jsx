@@ -1,4 +1,5 @@
 import { Copy, InstagramLogo, Minus, PaperPlaneTilt, Plus, ShoppingBag, Trash } from '@phosphor-icons/react'
+import { ProductImage } from '../components/products/ProductImage'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formatPrice } from '../features/products/product.utils'
@@ -141,7 +142,12 @@ export function BasketPage() {
             {cartItems.map((item) => (
               <article key={item.id} className={styles.itemRow}>
                 <div className={styles.itemInfo}>
-                  <img className={styles.itemImage} src={item.photoUrl} alt={item.name} />
+                  <ProductImage
+                    className={styles.itemImage}
+                    fallbackClassName={styles.itemImageFallback}
+                    src={item.photoUrl}
+                    alt={item.name}
+                  />
                   <div className={styles.itemText}>
                     <strong>{item.name}</strong>
                     <span>{formatPrice(item.price)}</span>

@@ -7,10 +7,9 @@ export function isProductValid(product) {
   const hasCategory = typeof product.category === 'string' && product.category.trim().length > 0
   const hasDescription =
     typeof product.shortDescription === 'string' && product.shortDescription.trim().length > 0
-  const hasPhoto = typeof product.photoUrl === 'string' && product.photoUrl.trim().length > 0
   const hasValidPrice = typeof product.price === 'number' && Number.isFinite(product.price)
 
-  return hasName && hasCategory && hasDescription && hasPhoto && hasValidPrice
+  return hasName && hasCategory && hasDescription && hasValidPrice
 }
 
 export function isPublicProduct(product) {

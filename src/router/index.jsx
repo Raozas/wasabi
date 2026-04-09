@@ -3,6 +3,7 @@ import { AdminRoute } from '../components/auth/AdminRoute'
 import { SuperadminRoute } from '../components/auth/SuperadminRoute'
 import { MainLayout } from '../layouts/MainLayout'
 import { AdminDashboardPage } from '../pages/AdminDashboardPage'
+import { AdminProductImportPage } from '../pages/AdminProductImportPage'
 import { AdminSettingsPage } from '../pages/AdminSettingsPage'
 import { AdminUsersPage } from '../pages/AdminUsersPage'
 import { BasketPage } from '../pages/BasketPage'
@@ -22,6 +23,7 @@ export function AppRouter() {
         <Route path="home" element={<Navigate to="/" replace />} />
         <Route element={<AdminRoute />}>
           <Route path="admin" element={<AdminDashboardPage />} />
+          <Route path="admin/products/import" element={<AdminProductImportPage />} />
           <Route path="admin/settings" element={<AdminSettingsPage />} />
         </Route>
         <Route element={<SuperadminRoute />}>

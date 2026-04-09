@@ -1,6 +1,7 @@
 import { CheckCircle, ShoppingCart, Tag, XCircle } from '@phosphor-icons/react'
 import { formatPrice } from '../../features/products/product.utils'
 import { useCart } from '../../hooks/useCart'
+import { ProductImage } from './ProductImage'
 import styles from './ProductCard.module.css'
 
 export function ProductCard({ product }) {
@@ -9,7 +10,13 @@ export function ProductCard({ product }) {
   return (
     <article className={styles.card}>
       <div className={styles.mediaWrap}>
-        <img className={styles.image} src={product.photoUrl} alt={product.name} />
+        <ProductImage
+          className={styles.image}
+          fallbackClassName={styles.imageFallback}
+          iconSize={40}
+          src={product.photoUrl}
+          alt={product.name}
+        />
         <span className={styles.category}>
           <Tag size={14} weight="fill" />
           {product.category}

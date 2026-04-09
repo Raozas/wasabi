@@ -254,6 +254,7 @@ Behavior:
 - `updateProduct()` supports partial updates
 - `deleteProduct()` removes the Firestore document
 - `listPublicProducts()` filters for public storefront use
+- Admin area also supports create-only CSV product import from a dedicated import page
 
 ### Admin User CRUD
 
@@ -417,9 +418,31 @@ A product must have:
 - `name: string`
 - `category: string`
 - `shortDescription: string`
-- `photoUrl: string`
 - `price: number`
 - `isAvailable === true`
+
+If `photoUrl` is empty, the storefront still shows the product with a placeholder image so shoppers can add it to the basket.
+
+## Product CSV Import
+
+Admins can bulk-create products from a dedicated admin import page opened from the product creation area.
+
+Expected columns:
+
+- `name`
+- `price`
+- `category`
+- `shortDescription`
+- `photoUrl` optional
+- `isAvailable` optional
+
+Behavior:
+
+- import is create-only
+- valid rows are imported even if other rows fail
+- row-level validation errors are shown in the import page
+- products without `photoUrl` stay visible in the catalog with a placeholder
+- admins can add or replace a product image later from the existing product edit form
 
 Validation lives in:
 

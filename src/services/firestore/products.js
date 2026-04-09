@@ -57,6 +57,39 @@ export async function createProduct(input) {
   return getProductById(documentRef.id)
 }
 
+export async function importProducts(rows) {
+  const results = {
+    createdCount: 0,
+    errors: [],
+    failedCount: 0,
+  }
+
+  for (const row of rows) {
+    if (row.error) {
+      results.errors.push({
+        message: row.error,
+        row: row.row,
+        rowNumber: row.rowNumber,
+      })
+      continue
+    }
+
+    try {
+      await createProduct(row.payload)
+      results.createdCount += 1
+    } catch (error) {
+      results.errors.push({
+        message: error instanceof Error ? error.message : 'Failed to import row.',
+        row: row.row,
+        rowNumber: row.rowNumber,
+      })
+    }
+  }
+
+  results.failedCount = results.errors.length
+  return results
+}
+
 export async function updateProduct(productId, input) {
   await updateDoc(productDocument(productId), createProductUpdateDocument(input))
   return getProductById(productId)

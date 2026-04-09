@@ -19,8 +19,8 @@ export function HomePage() {
         </span>
         <h2 className={styles.heading}>Browse curated products from the Wasabi catalog</h2>
         <p className={styles.lead}>
-          Guests can now explore a responsive storefront powered by Firestore, with only public-ready
-          products shown in the catalog.
+          Welcome to our store - explore our latest products in a modern, responsive shopping
+          experience designed to make browsing simple, smooth, and enjoyable.
         </p>
         <div className={styles.actions}>
           <Link className={styles.primaryAction} to="/products">

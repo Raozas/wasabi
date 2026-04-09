@@ -73,6 +73,13 @@
   flex: 0 0 auto;
 }
 
+.itemImageFallback {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  flex: 0 0 auto;
+}
+
 .itemText {
   display: grid;
   gap: 6px;

@@ -10,6 +10,8 @@ import {
   XCircle,
 } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ProductImage } from '../components/products/ProductImage'
 import { formatPrice } from '../features/products/product.utils'
 import {
   createProduct,
@@ -306,24 +308,32 @@ export function AdminDashboardPage() {
               {productError ? <p className={styles.error}>{productError}</p> : null}
               {productSuccess ? <p className={styles.success}>{productSuccess}</p> : null}
 
-              <button type="submit" className={styles.button} disabled={savingProducts}>
-                {savingProducts ? (
-                  <>
-                    <SpinnerGap size={18} className={styles.spin} />
-                    Saving...
-                  </>
-                ) : editingProductId ? (
-                  <>
-                    <NotePencil size={18} weight="bold" />
-                    Update product
-                  </>
-                ) : (
-                  <>
-                    <Plus size={18} weight="bold" />
-                    Create product
-                  </>
-                )}
-              </button>
+              <div className={styles.formActions}>
+                <button type="submit" className={styles.button} disabled={savingProducts}>
+                  {savingProducts ? (
+                    <>
+                      <SpinnerGap size={18} className={styles.spin} />
+                      Saving...
+                    </>
+                  ) : editingProductId ? (
+                    <>
+                      <NotePencil size={18} weight="bold" />
+                      Update product
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={18} weight="bold" />
+                      Create product
+                    </>
+                  )}
+                </button>
+                {!editingProductId ? (
+                  <Link className={styles.secondaryAction} to="/admin/products/import">
+                    <UploadSimple size={18} weight="bold" />
+                    Create from CSV file
+                  </Link>
+                ) : null}
+              </div>
             </form>
           </section>
 
@@ -349,13 +359,13 @@ export function AdminDashboardPage() {
                 {products.map((product) => (
                   <article key={product.id} className={styles.itemCard}>
                     <div className={styles.mediaSummary}>
-                      {product.photoUrl ? (
-                        <img className={styles.previewImage} src={product.photoUrl} alt={product.name} />
-                      ) : (
-                        <div className={styles.previewFallback}>
-                          <Package size={22} weight="duotone" />
-                        </div>
-                      )}
+                      <ProductImage
+                        className={styles.previewImage}
+                        fallbackClassName={styles.previewFallback}
+                        src={product.photoUrl}
+                        alt={product.name}
+                        iconSize={22}
+                      />
 
                       <div className={styles.itemInfo}>
                         <div className={styles.itemTop}>

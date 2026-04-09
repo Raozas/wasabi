@@ -1,0 +1,36 @@
+.fallback {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(248, 232, 219, 0.92)),
+    linear-gradient(90deg, rgba(245, 110, 78, 0.08), rgba(245, 110, 78, 0.18), rgba(245, 110, 78, 0.08));
+  color: rgba(113, 71, 49, 0.9);
+}
+
+.shimmer {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      110deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.18) 32%,
+      rgba(255, 255, 255, 0.42) 50%,
+      rgba(255, 255, 255, 0.18) 68%,
+      transparent 100%
+    );
+  transform: translateX(-100%);
+  animation: shimmer 2.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
