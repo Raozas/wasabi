@@ -1,11 +1,15 @@
 import { ProductCard } from './ProductCard'
 import styles from './ProductGrid.module.css'
 
-export function ProductGrid({ products }) {
+function joinClassNames(...values) {
+  return values.filter(Boolean).join(' ')
+}
+
+export function ProductGrid({ products, cardSize = 'default' }) {
   return (
-    <div className={styles.grid}>
+    <div className={joinClassNames(styles.grid, styles[`grid${cardSize[0].toUpperCase()}${cardSize.slice(1)}`])}>
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.id} product={product} size={cardSize} />
       ))}
     </div>
   )

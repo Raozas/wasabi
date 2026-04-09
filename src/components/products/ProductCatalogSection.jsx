@@ -7,6 +7,7 @@ export function ProductCatalogSection({
   title,
   description,
   products,
+  gridSize,
   loading,
   error,
   emptyMessage,
@@ -37,7 +38,9 @@ export function ProductCatalogSection({
       {!loading && !error && products.length === 0 ? (
         <div className={styles.state}>{emptyMessage}</div>
       ) : null}
-      {!loading && !error && products.length > 0 ? <ProductGrid products={products} /> : null}
+      {!loading && !error && products.length > 0 ? (
+        <ProductGrid products={products} cardSize={gridSize} />
+      ) : null}
     </section>
   )
 }

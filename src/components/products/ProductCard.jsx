@@ -4,12 +4,16 @@ import { useCart } from '../../hooks/useCart'
 import { ProductImage } from './ProductImage'
 import styles from './ProductCard.module.css'
 
-export function ProductCard({ product }) {
+function joinClassNames(...values) {
+  return values.filter(Boolean).join(' ')
+}
+
+export function ProductCard({ product, size = 'default' }) {
   const { addToCart } = useCart()
 
   return (
-    <article className={styles.card}>
-      <div className={styles.mediaWrap}>
+    <article className={joinClassNames(styles.card, styles[`card${size[0].toUpperCase()}${size.slice(1)}`])}>
+      <div className={joinClassNames(styles.mediaWrap, styles[`mediaWrap${size[0].toUpperCase()}${size.slice(1)}`])}>
         <ProductImage
           className={styles.image}
           fallbackClassName={styles.imageFallback}
@@ -23,13 +27,17 @@ export function ProductCard({ product }) {
         </span>
       </div>
 
-      <div className={styles.content}>
+      <div className={joinClassNames(styles.content, styles[`content${size[0].toUpperCase()}${size.slice(1)}`])}>
         <div className={styles.topRow}>
-          <h3 className={styles.title}>{product.name}</h3>
+          <h3 className={joinClassNames(styles.title, styles[`title${size[0].toUpperCase()}${size.slice(1)}`])}>
+            {product.name}
+          </h3>
           <span className={styles.price}>{formatPrice(product.price)}</span>
         </div>
 
-        <p className={styles.description}>{product.shortDescription}</p>
+        <p className={joinClassNames(styles.description, styles[`description${size[0].toUpperCase()}${size.slice(1)}`])}>
+          {product.shortDescription}
+        </p>
 
         <div className={styles.meta}>
           <span

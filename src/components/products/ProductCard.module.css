@@ -6,11 +6,27 @@
   box-shadow: var(--shadow-soft);
 }
 
+.cardSmall {
+  border-radius: var(--radius-lg);
+}
+
+.cardLarge {
+  border-radius: calc(var(--radius-xl) + 4px);
+}
+
 .mediaWrap {
   position: relative;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: var(--color-media-bg);
+}
+
+.mediaWrapSmall {
+  aspect-ratio: 1 / 1;
+}
+
+.mediaWrapLarge {
+  aspect-ratio: 16 / 11;
 }
 
 .image {
@@ -45,6 +61,14 @@
   padding: 20px;
 }
 
+.contentSmall {
+  padding: 16px;
+}
+
+.contentLarge {
+  padding: 24px;
+}
+
 .topRow {
   display: flex;
   justify-content: space-between;
@@ -57,6 +81,14 @@
   font-size: 1.1rem;
 }
 
+.titleSmall {
+  font-size: 1rem;
+}
+
+.titleLarge {
+  font-size: 1.25rem;
+}
+
 .price {
   color: var(--color-accent);
   font-weight: 800;
@@ -66,6 +98,16 @@
 .description {
   margin: 14px 0 18px;
   color: var(--color-muted);
+}
+
+.descriptionSmall {
+  margin: 12px 0 16px;
+  font-size: 0.92rem;
+}
+
+.descriptionLarge {
+  margin: 16px 0 20px;
+  font-size: 1rem;
 }
 
 .meta {

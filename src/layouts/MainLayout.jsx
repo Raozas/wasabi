@@ -7,17 +7,20 @@ import {
   SunDim,
   UsersThree,
 } from '@phosphor-icons/react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { UserMenu } from '../components/auth/UserMenu'
+import { ProductBrowseTools } from '../components/products/ProductBrowseTools'
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
 import { useTheme } from '../hooks/useTheme'
 import styles from './MainLayout.module.css'
 
 export function MainLayout() {
+  const location = useLocation()
   const { totalItems } = useCart()
   const { hasAdminAccess, isSuperadmin } = useAuth()
   const { isDarkMode, toggleThemeMode } = useTheme()
+  const isProductRoute = location.pathname === '/products'
   const navItems = [
     { to: '/', label: 'Overview', icon: House },
     { to: '/products', label: 'Shop', icon: ShoppingBagOpen },
@@ -62,6 +65,7 @@ export function MainLayout() {
               </NavLink>
             ))}
           </nav>
+          {isProductRoute ? <ProductBrowseTools /> : null}
         </aside>
 
         <main className={styles.content}>
