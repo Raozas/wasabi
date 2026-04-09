@@ -33,7 +33,7 @@
   padding: 10px 14px;
   border-radius: 999px;
   background: var(--color-accent);
-  color: #fff;
+  color: var(--color-on-accent);
   font-weight: 700;
   text-decoration: none;
 }
@@ -43,7 +43,7 @@
   place-items: center;
   min-height: 220px;
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.46);
+  background: var(--color-card-soft);
   color: var(--color-muted);
   text-align: center;
 }

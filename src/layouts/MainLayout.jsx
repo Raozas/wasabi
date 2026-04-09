@@ -1,19 +1,23 @@
 import {
   House,
+  Moon,
   ShieldCheck,
   ShoppingBag,
   ShoppingBagOpen,
+  SunDim,
   UsersThree,
 } from '@phosphor-icons/react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { UserMenu } from '../components/auth/UserMenu'
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
+import { useTheme } from '../hooks/useTheme'
 import styles from './MainLayout.module.css'
 
 export function MainLayout() {
   const { totalItems } = useCart()
   const { hasAdminAccess, isSuperadmin } = useAuth()
+  const { isDarkMode, toggleThemeMode } = useTheme()
   const navItems = [
     { to: '/', label: 'Overview', icon: House },
     { to: '/products', label: 'Shop', icon: ShoppingBagOpen },
@@ -29,7 +33,13 @@ export function MainLayout() {
           <p className={styles.kicker}>Wasabi Commerce</p>
           <h1 className={styles.title}>Wasabi Shop</h1>
         </div>
-        <UserMenu />
+        <div className={styles.headerActions}>
+          <button type="button" className={styles.themeToggle} onClick={toggleThemeMode}>
+            {isDarkMode ? <SunDim size={18} weight="bold" /> : <Moon size={18} weight="bold" />}
+            <span>{isDarkMode ? 'Light mode' : 'Dark mode'}</span>
+          </button>
+          <UserMenu />
+        </div>
       </header>
 
       <div className={styles.body}>
