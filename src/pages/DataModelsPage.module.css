@@ -1,0 +1,66 @@
+.page {
+  display: grid;
+  gap: 20px;
+}
+
+.grid,
+.helperGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.helperGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.card {
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--color-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--color-muted);
+}
+
+.note,
+.helperGrid p:last-child,
+.card > p {
+  margin-bottom: 0;
+  color: var(--color-muted);
+}
+
+.helperTitle {
+  margin-bottom: 8px;
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+@media (max-width: 900px) {
+  .grid,
+  .helperGrid {
+    grid-template-columns: 1fr;
+  }
+}

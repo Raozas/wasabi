@@ -1,0 +1,99 @@
+.shell {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.kicker {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 0.98;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
+}
+
+.sidebar {
+  display: block;
+}
+
+.nav {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.navBadge {
+  margin-left: auto;
+  min-width: 24px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.navLink:hover {
+  transform: translateX(2px);
+  background: var(--color-surface-alt);
+}
+
+.navLinkActive {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.content {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+  .body {
+    grid-template-columns: 1fr;
+  }
+}
