@@ -1,4 +1,5 @@
-import { ChatCircleDots, CheckCircle, DownloadSimple, SpinnerGap, X } from '@phosphor-icons/react'
+import { Button, Card, Chip, Spinner, TextArea } from '@heroui/react'
+import { ChatCircleDots, CheckCircle, DownloadSimple, X } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { formatPrice } from '../features/products/product.utils'
 import {
@@ -106,139 +107,128 @@ export function AdminContactsPage() {
   return (
     <section className={styles.page}>
       <div className={styles.hero}>
-        <span className={styles.eyebrow}>
+        <Chip color="primary" variant="flat">
           <ChatCircleDots size={16} weight="fill" />
           Customer contacts
-        </span>
+        </Chip>
         <h2 className={styles.title}>Recent customer contacts</h2>
         <p className={styles.copy}>
           Review incoming purchase requests, check order details, and mark customers as contacted.
         </p>
       </div>
 
-      <section className={styles.card}>
-        <div className={styles.sectionHeader}>
-          <div>
-            <span className={styles.sectionKicker}>
-              <ChatCircleDots size={16} weight="fill" />
-              Leads
-            </span>
-            <h3>All requests</h3>
-          </div>
-          <div className={styles.headerActions}>
-            <button
-              type="button"
-              className={styles.exportButton}
-              onClick={() => exportPurchaseRequestsCsv(purchaseRequests)}
-              disabled={purchaseRequests.length === 0}
-            >
-              <DownloadSimple size={16} weight="bold" />
-              Export CSV
-            </button>
-            <button
-              type="button"
-              className={styles.exportButton}
-              onClick={() => exportPurchaseRequestsXlsx(purchaseRequests)}
-              disabled={purchaseRequests.length === 0}
-            >
-              <DownloadSimple size={16} weight="bold" />
-              Export XLSX
-            </button>
-            <span className={styles.count}>{purchaseRequests.length}</span>
-          </div>
-        </div>
-
-        {requestError ? <p className={styles.error}>{requestError}</p> : null}
-        {requestSuccess ? <p className={styles.success}>{requestSuccess}</p> : null}
-        {savingRequests ? (
-          <p className={styles.pending}>
-            <SpinnerGap size={16} className={styles.spin} />
-            Updating request...
-          </p>
-        ) : null}
-        {loadingRequests ? <div className={styles.state}>Loading requests...</div> : null}
-        {!loadingRequests && purchaseRequests.length === 0 ? (
-          <div className={styles.state}>No purchase requests yet.</div>
-        ) : null}
-
-        {!loadingRequests && purchaseRequests.length > 0 ? (
-          <div className={selectedRequest ? styles.workspace : styles.workspaceCollapsed}>
-            <div className={styles.tableWrap}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Customer</th>
-                    <th>Contact</th>
-                    <th>Items</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {purchaseRequests.map((request) => {
-                    const isSelected = request.id === selectedRequestId
-
-                    return (
-                      <tr
-                        key={request.id}
-                        className={isSelected ? styles.rowActive : ''}
-                        onClick={() => setSelectedRequestId(request.id)}
-                      >
-                        <td>
-                          <div className={styles.primaryCell}>
-                            <strong>{request.customerName || 'Unnamed customer'}</strong>
-                            <span>{request.instagramUsername || 'No Instagram username'}</span>
-                          </div>
-                        </td>
-                        <td className={styles.compactCell}>{request.contactInfo}</td>
-                        <td className={styles.compactCell}>{request.totalItems}</td>
-                        <td className={styles.compactCell}>{formatPrice(request.totalPrice)}</td>
-                        <td>
-                          <span
-                            className={
-                              request.status === 'contacted'
-                                ? styles.statusAvailable
-                                : styles.statusHidden
-                            }
-                          >
-                            {request.status}
-                          </span>
-                        </td>
-                        <td className={styles.notesPreview}>{getNotesPreview(request)}</td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+      <Card className={styles.card}>
+        <Card.Content>
+          <div className={styles.sectionHeader}>
+            <div>
+              <span className={styles.sectionKicker}>
+                <ChatCircleDots size={16} weight="fill" />
+                Leads
+              </span>
+              <h3>All requests</h3>
             </div>
+            <div className={styles.headerActions}>
+              <Button
+                type="button"
+                variant="bordered"
+                onClick={() => exportPurchaseRequestsCsv(purchaseRequests)}
+                isDisabled={purchaseRequests.length === 0}
+              >
+                <DownloadSimple size={16} weight="bold" />
+                Export CSV
+              </Button>
+              <Button
+                type="button"
+                variant="bordered"
+                onClick={() => exportPurchaseRequestsXlsx(purchaseRequests)}
+                isDisabled={purchaseRequests.length === 0}
+              >
+                <DownloadSimple size={16} weight="bold" />
+                Export XLSX
+              </Button>
+              <Chip variant="flat">{purchaseRequests.length}</Chip>
+            </div>
+          </div>
 
-            {selectedRequest ? (
-              <aside className={styles.detailPanel}>
-                <>
+          {requestError ? <p className={styles.error}>{requestError}</p> : null}
+          {requestSuccess ? <p className={styles.success}>{requestSuccess}</p> : null}
+          {savingRequests ? (
+            <p className={styles.pending}>
+              <Spinner size="sm" />
+              Updating request...
+            </p>
+          ) : null}
+          {loadingRequests ? <div className={styles.state}>Loading requests...</div> : null}
+          {!loadingRequests && purchaseRequests.length === 0 ? (
+            <div className={styles.state}>No purchase requests yet.</div>
+          ) : null}
+
+          {!loadingRequests && purchaseRequests.length > 0 ? (
+            <div className={selectedRequest ? styles.workspace : styles.workspaceCollapsed}>
+              <div className={styles.tableWrap}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Contact</th>
+                      <th>Items</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {purchaseRequests.map((request) => {
+                      const isSelected = request.id === selectedRequestId
+
+                      return (
+                        <tr
+                          key={request.id}
+                          className={isSelected ? styles.rowActive : ''}
+                          onClick={() => setSelectedRequestId(request.id)}
+                        >
+                          <td>
+                            <div className={styles.primaryCell}>
+                              <strong>{request.customerName || 'Unnamed customer'}</strong>
+                              <span>{request.instagramUsername || 'No Instagram username'}</span>
+                            </div>
+                          </td>
+                          <td className={styles.compactCell}>{request.contactInfo}</td>
+                          <td className={styles.compactCell}>{request.totalItems}</td>
+                          <td className={styles.compactCell}>{formatPrice(request.totalPrice)}</td>
+                          <td>
+                            <Chip color={request.status === 'contacted' ? 'success' : 'warning'} variant="flat">
+                              {request.status}
+                            </Chip>
+                          </td>
+                          <td className={styles.notesPreview}>{getNotesPreview(request)}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {selectedRequest ? (
+                <aside className={styles.detailPanel}>
                   <div className={styles.detailHeader}>
                     <div>
                       <span className={styles.detailKicker}>Selected request</span>
                       <h3>{selectedRequest.customerName || 'Unnamed customer'}</h3>
                     </div>
                     <div className={styles.detailHeaderActions}>
-                      <span
-                        className={
-                          selectedRequest.status === 'contacted'
-                            ? styles.statusAvailable
-                            : styles.statusHidden
-                        }
-                      >
+                      <Chip color={selectedRequest.status === 'contacted' ? 'success' : 'warning'} variant="flat">
                         {selectedRequest.status}
-                      </span>
-                      <button
+                      </Chip>
+                      <Button
+                        isIconOnly
                         type="button"
-                        className={styles.closeButton}
+                        variant="light"
                         onClick={() => setSelectedRequestId('')}
                         aria-label="Close request details"
                       >
                         <X size={16} weight="bold" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
@@ -263,14 +253,13 @@ export function AdminContactsPage() {
 
                   <div className={styles.detailBlock}>
                     <span className={styles.detailLabel}>Order summary</span>
-                    <pre className={styles.requestSummary}>{selectedRequest.orderSummary}</pre>
+                    <TextArea readOnly value={selectedRequest.orderSummary} minRows={6} />
                   </div>
 
                   <div className={styles.detailBlock}>
                     <span className={styles.detailLabel}>Staff notes</span>
-                    <textarea
-                      className={styles.notesField}
-                      rows="6"
+                    <TextArea
+                      minRows={6}
                       value={selectedRequestNotes}
                       onChange={(event) =>
                         setNotesDrafts((current) => ({
@@ -283,30 +272,30 @@ export function AdminContactsPage() {
                   </div>
 
                   <div className={styles.actions}>
-                    <button
+                    <Button
                       type="button"
-                      className={styles.inlineButton}
+                      color="primary"
                       onClick={() => handleRequestStatus(selectedRequest.id, 'contacted')}
-                      disabled={savingRequests || selectedRequest.status === 'contacted'}
+                      isDisabled={savingRequests || selectedRequest.status === 'contacted'}
                     >
                       <CheckCircle size={16} weight="bold" />
                       Mark contacted
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
-                      className={styles.inlineButton}
+                      variant="bordered"
                       onClick={() => handleRequestNotesSave(selectedRequest.id)}
-                      disabled={savingRequests}
+                      isDisabled={savingRequests}
                     >
                       Save notes
-                    </button>
+                    </Button>
                   </div>
-                </>
-              </aside>
-            ) : null}
-          </div>
-        ) : null}
-      </section>
+                </aside>
+              ) : null}
+            </div>
+          ) : null}
+        </Card.Content>
+      </Card>
     </section>
   )
 }

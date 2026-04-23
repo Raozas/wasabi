@@ -1,3 +1,4 @@
+import { Button, Card, Chip, Input } from '@heroui/react'
 import { EnvelopeSimple, LockKey, ShieldCheck } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
@@ -69,53 +70,47 @@ export function LoginPage() {
 
   return (
     <section className={styles.page}>
-      <div className={styles.card}>
-        <span className={styles.eyebrow}>
-          <ShieldCheck size={16} weight="fill" />
-          Secure sign in
-        </span>
-        <h2 className={styles.title}>Email/password access for admins</h2>
-        <p className={styles.copy}>{statusText}</p>
+      <Card className={styles.card}>
+        <Card.Content className={styles.content}>
+          <Chip className={styles.eyebrow} color="primary" variant="flat">
+            <ShieldCheck size={16} weight="fill" />
+            Secure sign in
+          </Chip>
+          <h2 className={styles.title}>Email/password access for admins</h2>
+          <p className={styles.copy}>{statusText}</p>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <label className={styles.field}>
-            <span>Email</span>
-            <div className={styles.inputWrap}>
-              <EnvelopeSimple size={18} weight="duotone" />
-              <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="admin@example.com"
-                autoComplete="email"
-                required
-              />
-            </div>
-          </label>
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <Input
+              label="Email"
+              startContent={<EnvelopeSimple size={18} weight="duotone" />}
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="admin@example.com"
+              autoComplete="email"
+              required
+            />
 
-          <label className={styles.field}>
-            <span>Password</span>
-            <div className={styles.inputWrap}>
-              <LockKey size={18} weight="duotone" />
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Enter your password"
-                autoComplete="current-password"
-                required
-              />
-            </div>
-          </label>
+            <Input
+              label="Password"
+              startContent={<LockKey size={18} weight="duotone" />}
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Enter your password"
+              autoComplete="current-password"
+              required
+            />
 
-          {authError ? <p className={styles.error}>{authError}</p> : null}
-          {disabledMessage ? <p className={styles.hint}>{disabledMessage}</p> : null}
+            {authError ? <p className={styles.error}>{authError}</p> : null}
+            {disabledMessage ? <p className={styles.hint}>{disabledMessage}</p> : null}
 
-          <button type="submit" className={styles.submit} disabled={isDisabled}>
-            {submitting ? 'Signing in...' : 'Sign in as admin'}
-          </button>
-        </form>
-      </div>
+            <Button type="submit" color="primary" className={styles.submit} isDisabled={isDisabled}>
+              {submitting ? 'Signing in...' : 'Sign in as admin'}
+            </Button>
+          </form>
+        </Card.Content>
+      </Card>
     </section>
   )
 }

@@ -1,5 +1,6 @@
+import { Button, Card, Spinner } from '@heroui/react'
 import { ArrowRight, Package } from '@phosphor-icons/react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ProductGrid } from './ProductGrid'
 import styles from './ProductCatalogSection.module.css'
 
@@ -15,32 +16,45 @@ export function ProductCatalogSection({
   ctaTo,
   ctaIcon,
 }) {
-  return (
-    <section className={styles.section}>
-      <div className={styles.header}>
-        <div>
-          <h2 className={styles.title}>
-            <Package size={22} weight="duotone" />
-            {title}
-          </h2>
-          <p className={styles.description}>{description}</p>
-        </div>
-        {ctaLabel && ctaTo ? (
-          <Link className={styles.link} to={ctaTo}>
-            {ctaIcon ?? <ArrowRight size={18} weight="bold" />}
-            {ctaLabel}
-          </Link>
-        ) : null}
-      </div>
+  const navigate = useNavigate()
 
-      {loading ? <div className={styles.state}>Loading products...</div> : null}
-      {!loading && error ? <div className={styles.state}>{error}</div> : null}
-      {!loading && !error && products.length === 0 ? (
-        <div className={styles.state}>{emptyMessage}</div>
-      ) : null}
-      {!loading && !error && products.length > 0 ? (
-        <ProductGrid products={products} cardSize={gridSize} />
-      ) : null}
-    </section>
+  return (
+    <Card className={styles.section}>
+      <Card.Content className={styles.inner}>
+        <div className={styles.header}>
+          <div>
+            <h2 className={styles.title}>
+              <Package size={22} weight="duotone" />
+              {title}
+            </h2>
+            <p className={styles.description}>{description}</p>
+          </div>
+          {ctaLabel && ctaTo ? (
+            <Button
+              variant="light"
+              color="primary"
+              onClick={() => navigate(ctaTo)}
+              endContent={ctaIcon ?? <ArrowRight size={18} weight="bold" />}
+            >
+              {ctaLabel}
+            </Button>
+          ) : null}
+        </div>
+
+        {loading ? (
+          <div className={styles.state}>
+            <Spinner size="sm" />
+            Loading products...
+          </div>
+        ) : null}
+        {!loading && error ? <div className={styles.state}>{error}</div> : null}
+        {!loading && !error && products.length === 0 ? (
+          <div className={styles.state}>{emptyMessage}</div>
+        ) : null}
+        {!loading && !error && products.length > 0 ? (
+          <ProductGrid products={products} cardSize={gridSize} />
+        ) : null}
+      </Card.Content>
+    </Card>
   )
 }

@@ -1,6 +1,7 @@
+import { Button, Card, Chip } from '@heroui/react'
 import { ShoppingBag } from '@phosphor-icons/react'
 import { useMemo } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ProductCatalogSection } from '../components/products/ProductCatalogSection'
 import {
   normalizeCatalogCardSize,
@@ -11,6 +12,7 @@ import { useProducts } from '../hooks/useProducts'
 import styles from './ProductListPage.module.css'
 
 export function ProductListPage() {
+  const navigate = useNavigate()
   const { totalItems } = useCart()
   const { error, loading, products } = useProducts({ publicOnly: true })
   const [searchParams] = useSearchParams()
@@ -52,18 +54,26 @@ export function ProductListPage() {
 
   return (
     <section className={styles.page}>
-      <div className={styles.hero}>
-        <span className={styles.eyebrow}>Guest storefront</span>
-        <h2 className={styles.title}>Browse available products</h2>
-        <p className={styles.copy}>
-          Explore the live catalog, jump into a category quickly, and choose a card size that feels
-          best on your screen.
-        </p>
-        <Link className={styles.basketLink} to="/basket">
-          <ShoppingBag size={18} weight="duotone" />
-          Basket {totalItems > 0 ? `(${totalItems})` : ''}
-        </Link>
-      </div>
+      <Card className={styles.hero}>
+        <Card.Content className={styles.heroContent}>
+          <Chip className={styles.eyebrow} color="primary" variant="flat">
+            Guest storefront
+          </Chip>
+          <h2 className={styles.title}>Browse available products</h2>
+          <p className={styles.copy}>
+            Explore the live catalog, jump into a category quickly, and choose a card size that
+            feels best on your screen.
+          </p>
+          <Button
+            className={styles.basketLink}
+            variant="bordered"
+            startContent={<ShoppingBag size={18} weight="duotone" />}
+            onClick={() => navigate('/basket')}
+          >
+            Basket {totalItems > 0 ? `(${totalItems})` : ''}
+          </Button>
+        </Card.Content>
+      </Card>
 
       <ProductCatalogSection
         title="Catalog"

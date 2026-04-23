@@ -1,3 +1,4 @@
+import { Button, ButtonGroup, Card, Chip } from '@heroui/react'
 import { MagnifyingGlass, Rows, SlidersHorizontal, X } from '@phosphor-icons/react'
 import { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -37,10 +38,14 @@ export function ProductBrowseTools() {
       return 'all'
     }
 
-    return categoryMeta.some((item) => item.category === requestedCategory) ? requestedCategory : 'all'
+    return categoryMeta.some((item) => item.category === requestedCategory)
+      ? requestedCategory
+      : 'all'
   }, [categoryMeta, requestedCategory])
 
-  const activeCardSize = normalizeCatalogCardSize(searchParams.get('size') ?? readStoredCatalogCardSize())
+  const activeCardSize = normalizeCatalogCardSize(
+    searchParams.get('size') ?? readStoredCatalogCardSize(),
+  )
 
   useEffect(() => {
     window.localStorage.setItem(CATALOG_CARD_SIZE_STORAGE_KEY, activeCardSize)
@@ -75,76 +80,85 @@ export function ProductBrowseTools() {
   }
 
   return (
-    <section className={styles.panel}>
-      <div className={styles.header}>
-        <div>
-          <span className={styles.kicker}>
-            <SlidersHorizontal size={14} weight="fill" />
-            Browse tools
+    <Card className={styles.panel}>
+      <Card.Content className={styles.inner}>
+        <div className={styles.header}>
+          <div>
+            <span className={styles.kicker}>
+              <SlidersHorizontal size={14} weight="fill" />
+              Browse tools
+            </span>
+            <strong className={styles.title}>Catalog controls</strong>
+          </div>
+          {activeCategory !== 'all' ? (
+            <Button
+              type="button"
+              variant="light"
+              color="danger"
+              className={styles.clearButton}
+              onClick={() => handleCategoryChange('all')}
+            >
+              <X size={14} weight="bold" />
+              Clear
+            </Button>
+          ) : null}
+        </div>
+
+        <div className={styles.summary}>
+          <Chip className={styles.summaryPill} color="primary" variant="flat">
+            <MagnifyingGlass size={14} weight="bold" />
+            {loading ? 'Loading...' : `${products.length} total`}
+          </Chip>
+        </div>
+
+        <div className={styles.section}>
+          <span className={styles.label}>Categories</span>
+          <div className={styles.chips}>
+            <ButtonGroup className={styles.group} variant="bordered">
+              <Button
+                type="button"
+                color={activeCategory === 'all' ? 'primary' : 'default'}
+                variant={activeCategory === 'all' ? 'solid' : 'light'}
+                onClick={() => handleCategoryChange('all')}
+              >
+                All ({products.length})
+              </Button>
+              {categoryMeta.map((item) => (
+                <Button
+                  key={item.category}
+                  type="button"
+                  color={activeCategory === item.category ? 'primary' : 'default'}
+                  variant={activeCategory === item.category ? 'solid' : 'light'}
+                  onClick={() => handleCategoryChange(item.category)}
+                >
+                  {item.category} ({item.count})
+                </Button>
+              ))}
+            </ButtonGroup>
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <span className={styles.label}>
+            <Rows size={14} weight="fill" />
+            Card size
           </span>
-          <strong className={styles.title}>Catalog controls</strong>
+          <ButtonGroup className={styles.sizeList} variant="bordered">
+            {CATALOG_CARD_SIZE_OPTIONS.map((option) => (
+              <Button
+                key={option.value}
+                type="button"
+                color={activeCardSize === option.value ? 'primary' : 'default'}
+                variant={activeCardSize === option.value ? 'solid' : 'light'}
+                className={styles.sizeButton}
+                onClick={() => handleCardSizeChange(option.value)}
+              >
+                {option.label}
+              </Button>
+            ))}
+          </ButtonGroup>
         </div>
-        {activeCategory !== 'all' ? (
-          <button type="button" className={styles.clearButton} onClick={() => handleCategoryChange('all')}>
-            <X size={14} weight="bold" />
-            Clear
-          </button>
-        ) : null}
-      </div>
-
-      <div className={styles.summary}>
-        <span className={styles.summaryPill}>
-          <MagnifyingGlass size={14} weight="bold" />
-          {loading ? 'Loading...' : `${products.length} total`}
-        </span>
-      </div>
-
-      <div className={styles.section}>
-        <span className={styles.label}>Categories</span>
-        <div className={styles.chips}>
-          <button
-            type="button"
-            className={activeCategory === 'all' ? `${styles.chip} ${styles.chipActive}` : styles.chip}
-            onClick={() => handleCategoryChange('all')}
-          >
-            All
-            <span>{products.length}</span>
-          </button>
-          {categoryMeta.map((item) => (
-            <button
-              key={item.category}
-              type="button"
-              className={activeCategory === item.category ? `${styles.chip} ${styles.chipActive}` : styles.chip}
-              onClick={() => handleCategoryChange(item.category)}
-            >
-              {item.category}
-              <span>{item.count}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <span className={styles.label}>
-          <Rows size={14} weight="fill" />
-          Card size
-        </span>
-        <div className={styles.sizeList}>
-          {CATALOG_CARD_SIZE_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              className={
-                activeCardSize === option.value ? `${styles.sizeButton} ${styles.sizeButtonActive}` : styles.sizeButton
-              }
-              onClick={() => handleCardSizeChange(option.value)}
-            >
-              <strong>{option.label}</strong>
-              <span>{option.description}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </section>
+      </Card.Content>
+    </Card>
   )
 }

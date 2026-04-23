@@ -1,54 +1,108 @@
+import { Button, Card, Chip, Separator, Spinner } from '@heroui/react'
 import { ArrowRight, Package, ShoppingBag, Sparkle } from '@phosphor-icons/react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ProductCatalogSection } from '../components/products/ProductCatalogSection'
+import heroImage from '../assets/hero.png'
+import { splitHomeSections } from '../features/products/home-sections'
 import { useCart } from '../hooks/useCart'
 import { useProducts } from '../hooks/useProducts'
 import styles from './HomePage.module.css'
 
 export function HomePage() {
+  const navigate = useNavigate()
   const { totalItems } = useCart()
   const { error, loading, products } = useProducts({ publicOnly: true })
-  const featuredProducts = products.slice(0, 3)
+  const { allProducts, bestSelling } = splitHomeSections(products)
 
   return (
     <section className={styles.page}>
-      <div className={styles.hero}>
-        <span className={styles.badge}>
-          <Sparkle size={16} weight="fill" />
-          Public storefront
-        </span>
-        <h2 className={styles.heading}>Browse curated products from the Wasabi catalog</h2>
-        <p className={styles.lead}>
-          Welcome to our store - explore our latest products in a modern, responsive shopping
-          experience designed to make browsing simple, smooth, and enjoyable.
-        </p>
-        <div className={styles.actions}>
-          <Link className={styles.primaryAction} to="/products">
-            <Package size={18} weight="bold" />
-            View full catalog
-          </Link>
-          <Link className={styles.secondaryLink} to="/basket">
-            <ShoppingBag size={16} weight="duotone" />
-            Basket {totalItems > 0 ? `(${totalItems})` : ''}
-          </Link>
-          <span className={styles.secondaryAction}>
-            <Sparkle size={16} weight="duotone" />
-            {loading ? 'Loading catalog...' : `${products.length} products available`}
-          </span>
+      <Card className={styles.hero}>
+        <Card.Content className={styles.heroGrid}>
+          <div className={styles.heroCopy}>
+            <Chip className={styles.badge} color="primary" variant="flat">
+              <Sparkle size={16} weight="fill" />
+              Public storefront
+            </Chip>
+            <h2 className={styles.heading}>Logo and text for a cleaner top-first storefront</h2>
+            <p className={styles.lead}>
+              The public experience now starts with a horizontal navigation pattern and a larger
+              landing block that highlights the brand, the shopping flow, and the featured catalog.
+            </p>
+            <div className={styles.actions}>
+              <Button
+                color="primary"
+                size="lg"
+                startContent={<Package size={18} weight="bold" />}
+                onClick={() => navigate('/products')}
+              >
+                View full catalog
+              </Button>
+              <Button
+                variant="bordered"
+                size="lg"
+                startContent={<ShoppingBag size={16} weight="duotone" />}
+                onClick={() => navigate('/basket')}
+              >
+                Basket {totalItems > 0 ? `(${totalItems})` : ''}
+              </Button>
+              <Chip className={styles.secondaryAction} variant="bordered">
+                <Sparkle size={16} weight="duotone" />
+                {loading ? 'Loading catalog...' : `${products.length} products available`}
+              </Chip>
+            </div>
+          </div>
+
+          <div className={styles.heroVisual}>
+            <div className={styles.heroCircle} />
+            <img src={heroImage} alt="Wasabi storefront hero" className={styles.heroImage} />
+          </div>
+        </Card.Content>
+      </Card>
+
+      {loading && products.length === 0 ? (
+        <div className={styles.loadingState}>
+          <Spinner size="sm" />
+          Loading homepage products...
         </div>
-      </div>
+      ) : null}
 
       <ProductCatalogSection
-        title="Featured products"
-        description="A storefront preview pulled from the live public catalog."
-        products={featuredProducts}
+        title="Best selling"
+        description="A top row of products surfaced from the public catalog using a stable storefront sort."
+        products={bestSelling}
         loading={loading}
         error={error}
-        emptyMessage="No featured products are available yet."
-        ctaLabel="See all products"
+        emptyMessage="No best selling products are available yet."
+        ctaLabel="Browse catalog"
         ctaTo="/products"
         ctaIcon={<ArrowRight size={18} weight="bold" />}
       />
+
+      <ProductCatalogSection
+        title="Our products"
+        description="More live products from the storefront catalog."
+        products={allProducts.length > 0 ? allProducts : bestSelling}
+        loading={loading}
+        error={error}
+        emptyMessage="No products are available yet."
+        ctaLabel="Open products"
+        ctaTo="/products"
+        ctaIcon={<ArrowRight size={18} weight="bold" />}
+      />
+
+      <Card className={styles.companyInfo}>
+        <Card.Content className={styles.companyContent}>
+          <Separator />
+          <div>
+            <p className={styles.companyKicker}>Company info</p>
+            <h3>Built for a direct storefront conversation</h3>
+            <p>
+              Wasabi Shop keeps catalog browsing public and simple, while ordering flows continue
+              into direct messaging so admins can confirm details quickly.
+            </p>
+          </div>
+        </Card.Content>
+      </Card>
     </section>
   )
 }

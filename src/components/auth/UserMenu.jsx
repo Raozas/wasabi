@@ -1,118 +1,116 @@
 import {
-  CaretDown,
+  ArrowSquareOut,
   GearSix,
-  House,
   ShieldCheck,
   SignOut,
   UserCircle,
   UsersThree,
 } from '@phosphor-icons/react'
-import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Avatar, Button, Dropdown } from '@heroui/react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import styles from './UserMenu.module.css'
 
 export function UserMenu() {
   const { adminProfile, isSuperadmin, loading, signOutUser, user } = useAuth()
-  const [open, setOpen] = useState(false)
-  const menuRef = useRef(null)
+  const navigate = useNavigate()
 
   const statusText = loading ? 'Checking' : user ? 'Signed in' : 'Guest'
   const userName = adminProfile?.name || user?.displayName || user?.email || 'Guest'
   const roleName = adminProfile?.role || 'guest'
 
-  useEffect(() => {
-    function handlePointerDown(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpen(false)
-      }
-    }
-
-    function handleKeyDown(event) {
-      if (event.key === 'Escape') {
-        setOpen(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handlePointerDown)
-    document.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown)
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [])
-
   if (!user) {
     return (
-      <Link className={styles.guestLink} to="/login">
-        <UserCircle size={20} weight="duotone" />
+      <Button
+        color="primary"
+        variant="solid"
+        startContent={<UserCircle size={20} weight="duotone" />}
+        className={styles.guestButton}
+        onClick={() => navigate('/login')}
+      >
         <span>{statusText}</span>
-      </Link>
+      </Button>
     )
   }
 
   return (
-    <div className={styles.wrap} ref={menuRef}>
-      <button
-        type="button"
-        className={styles.trigger}
-        onClick={() => setOpen((current) => !current)}
-        aria-expanded={open}
-        aria-haspopup="menu"
-      >
-        <UserCircle size={22} weight="duotone" />
-        <span className={styles.triggerText}>{statusText}</span>
-        <CaretDown size={16} weight="bold" />
-      </button>
-
-      {open ? (
-        <div className={styles.dropdown} role="menu">
-          <div className={styles.profile}>
-            <div className={styles.avatar}>
-              <UserCircle size={28} weight="duotone" />
-            </div>
-            <div className={styles.profileText}>
+    <Dropdown.Root>
+      <Dropdown.Trigger>
+        <Button variant="bordered" className={styles.trigger}>
+          <span className={styles.triggerInner}>
+            <Avatar size="sm" name={userName} />
+            <span className={styles.triggerText}>
               <strong>{userName}</strong>
               <span>{roleName}</span>
-            </div>
-          </div>
+            </span>
+          </span>
+          <ArrowSquareOut size={16} weight="bold" />
+        </Button>
+      </Dropdown.Trigger>
+      <Dropdown.Popover>
+        <Dropdown.Menu
+          aria-label="User actions"
+          onAction={(key) => {
+            if (key === 'admin') {
+              navigate('/admin')
+            }
 
-          <Link className={styles.menuLink} to="/admin/settings" onClick={() => setOpen(false)}>
-            <GearSix size={18} weight="bold" />
-            <span>Settings</span>
-          </Link>
+            if (key === 'settings') {
+              navigate('/admin/settings')
+            }
 
-          <Link className={styles.menuLink} to="/admin" onClick={() => setOpen(false)}>
-            <ShieldCheck size={18} weight="bold" />
-            <span>Admin</span>
-          </Link>
+            if (key === 'admins') {
+              navigate('/admin/users')
+            }
 
-          <Link className={styles.menuLink} to="/" onClick={() => setOpen(false)}>
-            <House size={18} weight="bold" />
-            <span>Open site</span>
-          </Link>
-
-          {isSuperadmin ? (
-            <Link className={styles.menuLink} to="/admin/users" onClick={() => setOpen(false)}>
-              <UsersThree size={18} weight="bold" />
-              <span>Admins</span>
-            </Link>
-          ) : null}
-
-          <button
-            type="button"
-            className={styles.menuButton}
-            onClick={() => {
-              setOpen(false)
-              signOutUser()
-            }}
-          >
-            <SignOut size={18} weight="bold" />
-            <span>Sign out</span>
-          </button>
-        </div>
-      ) : null}
-    </div>
+            if (key === 'logout') {
+              void signOutUser()
+            }
+          }}
+        >
+          <Dropdown.Section>
+            <Dropdown.Item id="profile">
+              <div className={styles.profileRow}>
+                <Avatar name={userName} />
+                <div className={styles.profileText}>
+                  <strong>{userName}</strong>
+                  <span>{statusText}</span>
+                </div>
+              </div>
+            </Dropdown.Item>
+          </Dropdown.Section>
+          <Dropdown.Section title="Workspace">
+            <Dropdown.Item id="admin" textValue="Admin">
+              <span className={styles.menuItem}>
+                <ShieldCheck size={18} weight="bold" />
+                Admin
+              </span>
+            </Dropdown.Item>
+            <Dropdown.Item id="settings" textValue="Settings">
+              <span className={styles.menuItem}>
+                <GearSix size={18} weight="bold" />
+                Settings
+              </span>
+            </Dropdown.Item>
+            {isSuperadmin ? (
+              <Dropdown.Item id="admins" textValue="Admins">
+                <span className={styles.menuItem}>
+                  <UsersThree size={18} weight="bold" />
+                  Admins
+                </span>
+              </Dropdown.Item>
+            ) : null}
+          </Dropdown.Section>
+          <Dropdown.Section>
+            <Dropdown.Item id="logout" textValue="Sign out">
+              <span className={styles.menuItem}>
+                <SignOut size={18} weight="bold" />
+                Sign out
+              </span>
+            </Dropdown.Item>
+          </Dropdown.Section>
+        </Dropdown.Menu>
+      </Dropdown.Popover>
+    </Dropdown.Root>
   )
 }

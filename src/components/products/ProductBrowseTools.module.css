@@ -1,12 +1,17 @@
 .panel {
-  display: grid;
-  gap: 16px;
   margin-top: 16px;
-  padding: 14px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.72)),
+    var(--color-surface);
   box-shadow: var(--shadow-soft);
+}
+
+.inner {
+  display: grid;
+  gap: 16px;
+  padding: 14px;
 }
 
 .header {
@@ -33,19 +38,6 @@
   font-size: 0.98rem;
 }
 
-.clearButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--color-text);
-  font-weight: 700;
-  cursor: pointer;
-}
-
 .summary {
   display: flex;
   flex-wrap: wrap;
@@ -56,12 +48,6 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-  font-size: 0.86rem;
-  font-weight: 700;
 }
 
 .section {
@@ -82,67 +68,15 @@
 
 .chips,
 .sizeList {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
-.chip {
-  display: inline-flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--color-text);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.chip span {
-  display: inline-flex;
-  min-width: 24px;
-  justify-content: center;
-  padding: 3px 7px;
-  border-radius: 999px;
-  background: var(--color-surface-alt);
-  font-size: 0.76rem;
-}
-
-.chipActive {
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  border-color: transparent;
-}
-
-.chipActive span {
-  background: rgba(255, 255, 255, 0.16);
+.group {
+  flex-wrap: wrap;
 }
 
 .sizeButton {
-  display: grid;
-  gap: 4px;
-  padding: 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 18px;
-  background: transparent;
-  color: var(--color-text);
-  text-align: left;
-  cursor: pointer;
-}
-
-.sizeButton strong {
-  font-size: 0.92rem;
-}
-
-.sizeButton span {
-  color: var(--color-muted);
-  font-size: 0.8rem;
-  line-height: 1.35;
-}
-
-.sizeButtonActive {
-  background: var(--color-accent-soft);
-  border-color: var(--color-accent);
+  min-width: 88px;
 }

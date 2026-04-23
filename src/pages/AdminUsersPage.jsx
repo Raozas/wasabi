@@ -1,9 +1,9 @@
+import { Button, Card, Chip, Input, Spinner, TextArea } from '@heroui/react'
 import {
   CaretRight,
   CheckCircle,
   NotePencil,
   Plus,
-  SpinnerGap,
   Trash,
   UserGear,
   XCircle,
@@ -56,14 +56,6 @@ export function AdminUsersPage() {
   function resetAdminForm() {
     setEditingAdminId(null)
     setAdminForm(INITIAL_ADMIN_FORM)
-  }
-
-  function handleAdminChange(event) {
-    const { checked, name, type, value } = event.target
-    setAdminForm((current) => ({
-      ...current,
-      [name]: type === 'checkbox' ? checked : value,
-    }))
   }
 
   function startEditingAdmin(adminUser) {
@@ -148,185 +140,164 @@ export function AdminUsersPage() {
   return (
     <section className={styles.page}>
       <div className={styles.hero}>
-        <span className={styles.eyebrow}>
+        <Chip color="primary" variant="flat">
           <UserGear size={16} weight="fill" />
           Superadmin
-        </span>
+        </Chip>
         <h2 className={styles.title}>Admin management</h2>
         <p className={styles.copy}>Manage admin and superadmin access in one dedicated area.</p>
       </div>
 
       <div className={styles.layout}>
-        <section className={styles.card}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <span className={styles.sectionKicker}>
-                <UserGear size={16} weight="fill" />
-                {editingAdminId ? 'Edit admin' : 'Add admin'}
-              </span>
-              <h3>{editingAdminId ? 'Update admin access' : 'Create admin profile'}</h3>
+        <Card className={styles.card}>
+          <Card.Content>
+            <div className={styles.sectionHeader}>
+              <div>
+                <span className={styles.sectionKicker}>
+                  <UserGear size={16} weight="fill" />
+                  {editingAdminId ? 'Edit admin' : 'Add admin'}
+                </span>
+                <h3>{editingAdminId ? 'Update admin access' : 'Create admin profile'}</h3>
+              </div>
+              {editingAdminId ? (
+                <Button type="button" variant="light" onClick={resetAdminForm}>
+                  Cancel
+                </Button>
+              ) : null}
             </div>
-            {editingAdminId ? (
-              <button type="button" className={styles.ghostButton} onClick={resetAdminForm}>
-                Cancel
-              </button>
-            ) : null}
-          </div>
 
-          <form className={styles.form} onSubmit={handleAdminSubmit}>
-            <label className={styles.field}>
-              <span>Firebase UID</span>
-              <input name="uid" value={adminForm.uid} onChange={handleAdminChange} required />
-            </label>
-
-            <label className={styles.field}>
-              <span>Name</span>
-              <input name="name" value={adminForm.name} onChange={handleAdminChange} required />
-            </label>
-
-            <label className={styles.field}>
-              <span>Email</span>
-              <input
-                name="email"
-                type="email"
-                value={adminForm.email}
-                onChange={handleAdminChange}
+            <form className={styles.form} onSubmit={handleAdminSubmit}>
+              <Input
+                label="Firebase UID"
+                value={adminForm.uid}
+                onChange={(event) => setAdminForm((current) => ({ ...current, uid: event.target.value }))}
                 required
               />
-            </label>
-
-            <div className={styles.row}>
-              <label className={styles.field}>
-                <span>Role</span>
-                <select name="role" value={adminForm.role} onChange={handleAdminChange}>
-                  <option value="admin">Admin</option>
-                  <option value="superadmin">Super admin</option>
-                </select>
-              </label>
+              <Input
+                label="Name"
+                value={adminForm.name}
+                onChange={(event) => setAdminForm((current) => ({ ...current, name: event.target.value }))}
+                required
+              />
+              <Input
+                label="Email"
+                type="email"
+                value={adminForm.email}
+                onChange={(event) => setAdminForm((current) => ({ ...current, email: event.target.value }))}
+                required
+              />
+              <TextArea
+                label="Role"
+                value={adminForm.role}
+                onChange={(event) => setAdminForm((current) => ({ ...current, role: event.target.value }))}
+                description="Use admin or superadmin."
+                minRows={1}
+              />
 
               <label className={styles.toggle}>
                 <input
                   name="isActive"
                   type="checkbox"
                   checked={adminForm.isActive}
-                  onChange={handleAdminChange}
+                  onChange={(event) =>
+                    setAdminForm((current) => ({ ...current, isActive: event.target.checked }))
+                  }
                 />
                 <span>Active access</span>
               </label>
+
+              {adminError ? <p className={styles.error}>{adminError}</p> : null}
+              {adminSuccess ? <p className={styles.success}>{adminSuccess}</p> : null}
+
+              <Button type="submit" color="primary" isDisabled={savingAdmins}>
+                {savingAdmins ? <Spinner size="sm" /> : editingAdminId ? <NotePencil size={18} weight="bold" /> : <Plus size={18} weight="bold" />}
+                {editingAdminId ? 'Update admin' : 'Create admin'}
+              </Button>
+            </form>
+          </Card.Content>
+        </Card>
+
+        <Card className={styles.card}>
+          <Card.Content>
+            <div className={styles.sectionHeader}>
+              <div>
+                <span className={styles.sectionKicker}>
+                  <UserGear size={16} weight="fill" />
+                  Access list
+                </span>
+                <h3>All admin users</h3>
+              </div>
+              <Chip variant="flat">{adminUsers.length}</Chip>
             </div>
 
-            {adminError ? <p className={styles.error}>{adminError}</p> : null}
-            {adminSuccess ? <p className={styles.success}>{adminSuccess}</p> : null}
+            {loadingAdmins ? <div className={styles.state}>Loading admins...</div> : null}
+            {!loadingAdmins && adminUsers.length === 0 ? (
+              <div className={styles.state}>No admin users yet.</div>
+            ) : null}
 
-            <button type="submit" className={styles.button} disabled={savingAdmins}>
-              {savingAdmins ? (
-                <>
-                  <SpinnerGap size={18} className={styles.spin} />
-                  Saving...
-                </>
-              ) : editingAdminId ? (
-                <>
-                  <NotePencil size={18} weight="bold" />
-                  Update admin
-                </>
-              ) : (
-                <>
-                  <Plus size={18} weight="bold" />
-                  Create admin
-                </>
-              )}
-            </button>
-          </form>
-        </section>
-
-        <section className={styles.card}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <span className={styles.sectionKicker}>
-                <UserGear size={16} weight="fill" />
-                Access list
-              </span>
-              <h3>All admin users</h3>
-            </div>
-            <span className={styles.count}>{adminUsers.length}</span>
-          </div>
-
-          {loadingAdmins ? <div className={styles.state}>Loading admins...</div> : null}
-          {!loadingAdmins && adminUsers.length === 0 ? (
-            <div className={styles.state}>No admin users yet.</div>
-          ) : null}
-
-          {!loadingAdmins && adminUsers.length > 0 ? (
-            <div className={styles.itemList}>
-              {adminUsers.map((adminUser) => (
-                <article key={adminUser.uid} className={styles.itemCard}>
-                  <div className={styles.mediaSummary}>
-                    <div className={styles.previewFallback}>
-                      <UserGear size={22} weight="duotone" />
-                    </div>
-
-                    <div className={styles.itemInfo}>
-                      <div className={styles.itemTop}>
-                        <strong>{adminUser.name}</strong>
-                        <span className={styles.uidText}>{adminUser.uid}</span>
+            {!loadingAdmins && adminUsers.length > 0 ? (
+              <div className={styles.itemList}>
+                {adminUsers.map((adminUser) => (
+                  <article key={adminUser.uid} className={styles.itemCard}>
+                    <div className={styles.mediaSummary}>
+                      <div className={styles.previewFallback}>
+                        <UserGear size={22} weight="duotone" />
                       </div>
-                      <p>{adminUser.email}</p>
-                      <div className={styles.metaRow}>
-                        <span className={styles.category}>{adminUser.role}</span>
-                        <span
-                          className={
-                            adminUser.isActive ? styles.statusAvailable : styles.statusHidden
-                          }
-                        >
-                          {adminUser.isActive ? (
-                            <>
-                              <CheckCircle size={14} weight="fill" />
-                              Active
-                            </>
-                          ) : (
-                            <>
-                              <XCircle size={14} weight="fill" />
-                              Disabled
-                            </>
-                          )}
-                        </span>
+
+                      <div className={styles.itemInfo}>
+                        <div className={styles.itemTop}>
+                          <strong>{adminUser.name}</strong>
+                          <span className={styles.uidText}>{adminUser.uid}</span>
+                        </div>
+                        <p>{adminUser.email}</p>
+                        <div className={styles.metaRow}>
+                          <Chip variant="flat">{adminUser.role}</Chip>
+                          <Chip color={adminUser.isActive ? 'success' : 'danger'} variant="flat">
+                            {adminUser.isActive ? (
+                              <>
+                                <CheckCircle size={14} weight="fill" />
+                                Active
+                              </>
+                            ) : (
+                              <>
+                                <XCircle size={14} weight="fill" />
+                                Disabled
+                              </>
+                            )}
+                          </Chip>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className={styles.actions}>
-                    <button
-                      type="button"
-                      className={styles.inlineButton}
-                      onClick={() => startEditingAdmin(adminUser)}
-                    >
-                      <NotePencil size={16} weight="bold" />
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.inlineButton}
-                      onClick={() => handleAdminToggle(adminUser.uid, adminUser.isActive)}
-                      disabled={savingAdmins}
-                    >
-                      <CaretRight size={16} weight="bold" />
-                      {adminUser.isActive ? 'Disable' : 'Activate'}
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.inlineDanger}
-                      onClick={() => handleAdminDelete(adminUser.uid)}
-                      disabled={savingAdmins}
-                    >
-                      <Trash size={16} weight="bold" />
-                      Delete
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : null}
-        </section>
+                    <div className={styles.actions}>
+                      <Button variant="bordered" onClick={() => startEditingAdmin(adminUser)}>
+                        <NotePencil size={16} weight="bold" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="bordered"
+                        onClick={() => handleAdminToggle(adminUser.uid, adminUser.isActive)}
+                        isDisabled={savingAdmins}
+                      >
+                        <CaretRight size={16} weight="bold" />
+                        {adminUser.isActive ? 'Disable' : 'Activate'}
+                      </Button>
+                      <Button
+                        color="danger"
+                        variant="light"
+                        onClick={() => handleAdminDelete(adminUser.uid)}
+                        isDisabled={savingAdmins}
+                      >
+                        <Trash size={16} weight="bold" />
+                        Delete
+                      </Button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : null}
+          </Card.Content>
+        </Card>
       </div>
     </section>
   )

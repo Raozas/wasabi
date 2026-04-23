@@ -7,12 +7,15 @@
 
 .card {
   max-width: 420px;
-  padding: 32px;
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   box-shadow: var(--shadow-soft);
   text-align: center;
+}
+
+.content {
+  padding: 32px;
 }
 
 .code {
@@ -21,11 +24,4 @@
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.18em;
-}
-
-.link {
-  display: inline-flex;
-  margin-top: 18px;
-  color: var(--color-accent);
-  font-weight: 700;
 }

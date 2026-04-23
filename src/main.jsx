@@ -5,6 +5,7 @@ import App from './App'
 import { AuthProvider } from './contexts/AuthContext'
 import { CartProvider } from './contexts/CartContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import '@heroui/react/styles'
 import './styles/global.css'
 
 createRoot(document.getElementById('root')).render(

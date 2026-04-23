@@ -1,0 +1,102 @@
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  padding: 24px;
+}
+
+.sidebar {
+  position: sticky;
+  top: 18px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(245, 110, 78, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.68));
+  box-shadow: var(--shadow-soft);
+}
+
+.sidebarTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.kicker {
+  margin-bottom: 6px;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+}
+
+.title {
+  margin-bottom: 0;
+  font-size: 1.65rem;
+}
+
+.profileCard {
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.profileContent {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  flex-shrink: 0;
+}
+
+.profileContent p {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+  word-break: break-word;
+}
+
+.nav {
+  display: grid;
+  gap: 10px;
+}
+
+.navButton {
+  justify-content: flex-start;
+}
+
+.sidebarActions {
+  margin-top: auto;
+}
+
+.content {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .sidebar {
+    border-radius: 20px;
+    padding: 18px 14px;
+  }
+}

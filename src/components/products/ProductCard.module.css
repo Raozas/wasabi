@@ -1,9 +1,19 @@
 .card {
+  height: 100%;
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  background: var(--color-surface);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.72)),
+    var(--color-surface);
   box-shadow: var(--shadow-soft);
+}
+
+.cardInner {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
 }
 
 .cardSmall {
@@ -49,16 +59,13 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(38, 24, 20, 0.78);
-  color: var(--color-on-accent);
-  font-size: 0.78rem;
-  font-weight: 700;
 }
 
 .content {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .contentSmall {
@@ -79,6 +86,15 @@
 .title {
   margin: 0;
   font-size: 1.1rem;
+}
+
+.titleLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.titleLink:hover {
+  color: var(--color-accent);
 }
 
 .titleSmall {
@@ -116,6 +132,7 @@
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: auto;
 }
 
 .statusAvailable,
@@ -123,43 +140,20 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.statusAvailable {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
-}
-
-.statusUnavailable {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
 }
 
 .cartButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.cartButton:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+  margin-left: auto;
 }
 
 @media (max-width: 640px) {
   .topRow {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .cartButton {
+    width: 100%;
+    margin-left: 0;
   }
 }
