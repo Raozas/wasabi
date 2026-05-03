@@ -1,5 +1,6 @@
 import { Button, Card, Chip } from '@heroui/react'
-import { CheckCircle, ShoppingCart, Tag, XCircle } from '@phosphor-icons/react'
+import { CheckCircle, Minus, Plus, ShoppingCart, Tag, XCircle } from '@phosphor-icons/react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatPrice } from '../../features/products/product.utils'
 import { useCart } from '../../hooks/useCart'
@@ -20,14 +21,23 @@ function truncateDescription(description, maxLength = 50) {
   return `${normalized.slice(0, maxLength).trimEnd()}...`
 }
 
-export function ProductCard({ product, size = 'default' }) {
-  const { addToCart } = useCart()
+export function ProductCard({ product, size = 'small' }) {
+  const { addToCart, cartItems, decreaseQuantity, increaseQuantity } = useCart()
   const navigate = useNavigate()
-  const normalizedSize = size === 'compact' ? 'Small' : size === 'large' ? 'Large' : ''
+  const normalizedSize = size === 'small' ? 'Small' : size === 'large' ? 'Large' : ''
   const shortDescription = truncateDescription(product.shortDescription, 50)
+  const cartQuantity = useMemo(
+    () => cartItems.find((item) => item.id === product.id)?.quantity ?? 0,
+    [cartItems, product.id],
+  )
 
   function openProductPage() {
     navigate(`/products/${product.id}`)
+  }
+
+  function handleAddToCart(event) {
+    event.stopPropagation()
+    addToCart(product)
   }
 
   return (
@@ -56,6 +66,23 @@ export function ProductCard({ product, size = 'default' }) {
             <Tag size={14} weight="fill" />
             {product.category}
           </Chip>
+          <Chip
+            color={product.isAvailable ? 'success' : 'danger'}
+            variant="flat"
+            className={joinClassNames(
+              styles.statusChip,
+              product.isAvailable ? styles.statusAvailable : styles.statusUnavailable,
+            )}
+          >
+            {product.isAvailable ? (
+              <CheckCircle size={16} weight="fill" />
+            ) : (
+              <XCircle size={16} weight="fill" />
+            )}
+            <span className={styles.statusLabel}>
+              {product.isAvailable ? 'In stock' : 'Unavailable'}
+            </span>
+          </Chip>
         </div>
 
         <div className={joinClassNames(styles.content, styles[`content${normalizedSize}`])}>
@@ -71,25 +98,37 @@ export function ProductCard({ product, size = 'default' }) {
           </p>
 
           <div className={styles.meta}>
-            <Chip
-              color={product.isAvailable ? 'success' : 'danger'}
-              variant="flat"
-              className={product.isAvailable ? styles.statusAvailable : styles.statusUnavailable}
-            >
-              {product.isAvailable ? (
-                <CheckCircle size={16} weight="fill" />
-              ) : (
-                <XCircle size={16} weight="fill" />
-              )}
-              {product.isAvailable ? 'In stock' : 'Unavailable'}
-            </Chip>
+            {cartQuantity > 0 ? (
+              <div
+                className={styles.quantityControl}
+                onClick={(event) => event.stopPropagation()}
+                onKeyDown={(event) => event.stopPropagation()}
+              >
+                <Button
+                  isIconOnly
+                  variant="light"
+                  className={styles.quantityButton}
+                  onClick={() => decreaseQuantity(product.id)}
+                  isDisabled={!product.isAvailable}
+                >
+                  <Minus size={14} weight="bold" />
+                </Button>
+                <span className={styles.quantityValue}>{cartQuantity}</span>
+                <Button
+                  isIconOnly
+                  variant="light"
+                  className={styles.quantityButton}
+                  onClick={() => increaseQuantity(product.id)}
+                  isDisabled={!product.isAvailable}
+                >
+                  <Plus size={14} weight="bold" />
+                </Button>
+              </div>
+            ) : null}
             <Button
               color="primary"
               className={styles.cartButton}
-              onClick={(event) => {
-                event.stopPropagation()
-                addToCart(product)
-              }}
+              onClick={handleAddToCart}
               isDisabled={!product.isAvailable}
               startContent={<ShoppingCart size={16} weight="bold" />}
             >

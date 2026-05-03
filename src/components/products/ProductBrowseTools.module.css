@@ -1,82 +1,190 @@
+/* ── Panel shell ─────────────────────────────────────────── */
 .panel {
-  margin-top: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.72)),
-    var(--color-surface);
-  box-shadow: var(--shadow-soft);
+  border-radius: 14px;
+  border: 1px solid hsl(220 13% 91%);
+  background: #fff;
+  box-shadow:
+    0 1px 2px hsl(220 20% 60% / 0.06),
+    0 4px 16px hsl(220 20% 60% / 0.08);
 }
 
 .inner {
-  display: grid;
-  gap: 16px;
-  padding: 14px;
+  padding: 6px 8px 7px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-.kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-  color: var(--color-accent);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.title {
-  display: block;
-  font-size: 0.98rem;
-}
-
-.summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.summaryPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
+/* ── Section ─────────────────────────────────────────────── */
 .section {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+}
+
+/* ── Label row ───────────────────────────────────────────── */
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.labelIcon {
+  display: flex;
+  align-items: center;
+  color: hsl(220 14% 50%);
 }
 
 .label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--color-muted);
-  font-size: 0.8rem;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: hsl(220 14% 38%);
 }
 
-.chips,
-.sizeList {
+.labelDivider {
+  flex: 1;
+  height: 1px;
+  background: hsl(220 13% 92%);
+}
+
+.labelCount {
+  font-size: 10.5px;
+  color: hsl(220 14% 62%);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* ── Chips row ───────────────────────────────────────────── */
+.chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 6px;
 }
 
-.group {
-  flex-wrap: wrap;
+/* ── Individual chip ─────────────────────────────────────── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px 4px 11px;
+  border-radius: 999px;
+  border: 1.5px solid hsl(220 13% 88%);
+  background: hsl(220 14% 97%);
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
+  outline: none;
+  user-select: none;
 }
 
-.sizeButton {
-  min-width: 88px;
+.chip:hover {
+  background: hsl(220 14% 94%);
+  border-color: hsl(220 13% 78%);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px hsl(220 20% 60% / 0.12);
+}
+
+.chip:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Active chip */
+.chipActive {
+  background: hsl(221 83% 53%);
+  border-color: hsl(221 83% 53%);
+  box-shadow:
+    0 2px 8px hsl(221 83% 53% / 0.35),
+    inset 0 1px 0 hsl(221 83% 70% / 0.3);
+}
+
+.chipActive:hover {
+  background: hsl(221 83% 48%);
+  border-color: hsl(221 83% 48%);
+  box-shadow:
+    0 4px 14px hsl(221 83% 53% / 0.40),
+    inset 0 1px 0 hsl(221 83% 70% / 0.3);
+}
+
+/* ── Chip internals ──────────────────────────────────────── */
+.chipLabel {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: hsl(220 14% 35%);
+  line-height: 1;
+}
+
+.chipActive .chipLabel {
+  color: #fff;
+  font-weight: 600;
+}
+
+.chipBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: hsl(220 13% 88%);
+  color: hsl(220 14% 45%);
+  line-height: 1;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.chipActive .chipBadge {
+  background: hsl(221 83% 43%);
+  color: hsl(221 83% 92%);
+}
+
+/* ── Dark mode ───────────────────────────────────────────── */
+:root[data-theme='dark'] .panel {
+  border-color: hsl(220 13% 18%);
+  background: hsl(220 14% 10%);
+  box-shadow:
+    0 1px 2px hsl(0 0% 0% / 0.3),
+    0 4px 16px hsl(0 0% 0% / 0.25);
+}
+
+:root[data-theme='dark'] .labelIcon {
+  color: hsl(220 14% 55%);
+}
+
+:root[data-theme='dark'] .label {
+  color: hsl(220 14% 65%);
+}
+
+:root[data-theme='dark'] .labelDivider {
+  background: hsl(220 13% 20%);
+}
+
+:root[data-theme='dark'] .labelCount {
+  color: hsl(220 14% 45%);
+}
+
+:root[data-theme='dark'] .chip {
+  border-color: hsl(220 13% 22%);
+  background: hsl(220 14% 14%);
+}
+
+:root[data-theme='dark'] .chip:hover {
+  background: hsl(220 14% 18%);
+  border-color: hsl(220 13% 30%);
+  box-shadow: 0 3px 10px hsl(0 0% 0% / 0.3);
+}
+
+:root[data-theme='dark'] .chipLabel {
+  color: hsl(220 14% 72%);
+}
+
+:root[data-theme='dark'] .chipBadge {
+  background: hsl(220 13% 22%);
+  color: hsl(220 14% 55%);
 }

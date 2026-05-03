@@ -1,15 +1,14 @@
-import { Button, Card, Chip } from '@heroui/react'
-import { ShoppingBag } from '@phosphor-icons/react'
+import { ShoppingCartSimple } from '@phosphor-icons/react'
 import { useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ProductCatalogSection } from '../components/products/ProductCatalogSection'
-import {
-  normalizeCatalogCardSize,
-  readStoredCatalogCardSize,
-} from '../features/products/catalog-controls'
 import { useCart } from '../hooks/useCart'
 import { useProducts } from '../hooks/useProducts'
 import styles from './ProductListPage.module.css'
+
+function joinClassNames(...values) {
+  return values.filter(Boolean).join(' ')
+}
 
 export function ProductListPage() {
   const navigate = useNavigate()
@@ -17,7 +16,6 @@ export function ProductListPage() {
   const { error, loading, products } = useProducts({ publicOnly: true })
   const [searchParams] = useSearchParams()
   const selectedCategory = searchParams.get('category') ?? 'all'
-  const cardSize = normalizeCatalogCardSize(searchParams.get('size') ?? readStoredCatalogCardSize())
 
   const categoryMeta = useMemo(() => {
     const counts = products.reduce((result, product) => {
@@ -54,32 +52,11 @@ export function ProductListPage() {
 
   return (
     <section className={styles.page}>
-      <Card className={styles.hero}>
-        <Card.Content className={styles.heroContent}>
-          <Chip className={styles.eyebrow} color="primary" variant="flat">
-            Guest storefront
-          </Chip>
-          <h2 className={styles.title}>Browse available products</h2>
-          <p className={styles.copy}>
-            Explore the live catalog, jump into a category quickly, and choose a card size that
-            feels best on your screen.
-          </p>
-          <Button
-            className={styles.basketLink}
-            variant="bordered"
-            startContent={<ShoppingBag size={18} weight="duotone" />}
-            onClick={() => navigate('/basket')}
-          >
-            Basket {totalItems > 0 ? `(${totalItems})` : ''}
-          </Button>
-        </Card.Content>
-      </Card>
-
       <ProductCatalogSection
         title="Catalog"
         description="Filtered public products from the storefront inventory."
         products={visibleProducts}
-        gridSize={cardSize}
+        gridSize="small"
         loading={loading}
         error={error}
         emptyMessage={
@@ -88,6 +65,25 @@ export function ProductListPage() {
             : `No products are available in ${activeCategory} right now.`
         }
       />
+
+      <button
+        type="button"
+        className={joinClassNames(
+          styles.basketLink,
+          totalItems > 0 ? styles.basketLinkActive : styles.basketLinkIdle,
+        )}
+        onClick={() => navigate('/basket')}
+        aria-label={totalItems > 0 ? `Basket with ${totalItems} items` : 'Open basket'}
+      >
+        {totalItems > 0 ? (
+          <>
+            <ShoppingCartSimple size={30} weight="duotone" />
+            <span className={styles.basketCount}>{totalItems}</span>
+          </>
+        ) : (
+          <ShoppingCartSimple size={26} weight="duotone" />
+        )}
+      </button>
     </section>
   )
 }

@@ -1,4 +1,3 @@
-import { Button, Card, Chip, Input, Spinner, TextArea } from '@heroui/react'
 import {
   CaretRight,
   CheckCircle,
@@ -9,6 +8,17 @@ import {
   XCircle,
 } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
+import { Badge } from '../components/ui/badge'
+import { Button } from '../components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Textarea } from '../components/ui/textarea'
 import {
   createAdminUser,
   deleteAdminUser,
@@ -16,7 +26,7 @@ import {
   setAdminUserStatus,
   updateAdminUser,
 } from '../services/firestore/admin-users'
-import styles from './AdminUsersPage.module.css'
+import { cn } from '../lib/utils'
 
 const INITIAL_ADMIN_FORM = {
   email: '',
@@ -137,64 +147,89 @@ export function AdminUsersPage() {
     }
   }
 
-  return (
-    <section className={styles.page}>
-      <div className={styles.hero}>
-        <Chip color="primary" variant="flat">
-          <UserGear size={16} weight="fill" />
-          Superadmin
-        </Chip>
-        <h2 className={styles.title}>Admin management</h2>
-        <p className={styles.copy}>Manage admin and superadmin access in one dedicated area.</p>
-      </div>
+  function getStatusBadgeClass(isActive) {
+    return isActive
+      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-200'
+      : 'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-200'
+  }
 
-      <div className={styles.layout}>
-        <Card className={styles.card}>
-          <Card.Content>
-            <div className={styles.sectionHeader}>
-              <div>
-                <span className={styles.sectionKicker}>
-                  <UserGear size={16} weight="fill" />
+  return (
+    <section className="space-y-6">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
+        <Card className="bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(255,255,255,0.78))] dark:bg-[linear-gradient(180deg,rgba(24,24,27,0.96),rgba(24,24,27,0.88))]">
+          <CardHeader className="gap-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-2">
+                <Badge variant="secondary">
+                  <UserGear size={14} weight="fill" />
                   {editingAdminId ? 'Edit admin' : 'Add admin'}
-                </span>
-                <h3>{editingAdminId ? 'Update admin access' : 'Create admin profile'}</h3>
+                </Badge>
+                <div>
+                  <CardTitle className="text-2xl">
+                    {editingAdminId ? 'Update admin access' : 'Create admin profile'}
+                  </CardTitle>
+                  <CardDescription>
+                    Manage UID-based admin access for the Wasabi control panel.
+                  </CardDescription>
+                </div>
               </div>
               {editingAdminId ? (
-                <Button type="button" variant="light" onClick={resetAdminForm}>
+                <Button variant="ghost" onClick={resetAdminForm}>
                   Cancel
                 </Button>
               ) : null}
             </div>
+          </CardHeader>
 
-            <form className={styles.form} onSubmit={handleAdminSubmit}>
-              <Input
-                label="Firebase UID"
-                value={adminForm.uid}
-                onChange={(event) => setAdminForm((current) => ({ ...current, uid: event.target.value }))}
-                required
-              />
-              <Input
-                label="Name"
-                value={adminForm.name}
-                onChange={(event) => setAdminForm((current) => ({ ...current, name: event.target.value }))}
-                required
-              />
-              <Input
-                label="Email"
-                type="email"
-                value={adminForm.email}
-                onChange={(event) => setAdminForm((current) => ({ ...current, email: event.target.value }))}
-                required
-              />
-              <TextArea
-                label="Role"
-                value={adminForm.role}
-                onChange={(event) => setAdminForm((current) => ({ ...current, role: event.target.value }))}
-                description="Use admin or superadmin."
-                minRows={1}
-              />
+          <CardContent className="space-y-4">
+            <form className="space-y-4" onSubmit={handleAdminSubmit}>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Firebase UID</label>
+                <Input
+                  value={adminForm.uid}
+                  onChange={(event) =>
+                    setAdminForm((current) => ({ ...current, uid: event.target.value }))
+                  }
+                  required
+                />
+              </div>
 
-              <label className={styles.toggle}>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Name</label>
+                <Input
+                  value={adminForm.name}
+                  onChange={(event) =>
+                    setAdminForm((current) => ({ ...current, name: event.target.value }))
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Email</label>
+                <Input
+                  type="email"
+                  value={adminForm.email}
+                  onChange={(event) =>
+                    setAdminForm((current) => ({ ...current, email: event.target.value }))
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Role</label>
+                <Textarea
+                  rows={1}
+                  value={adminForm.role}
+                  onChange={(event) =>
+                    setAdminForm((current) => ({ ...current, role: event.target.value }))
+                  }
+                  placeholder="Use admin or superadmin."
+                />
+              </div>
+
+              <label className="flex items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel-bg)] p-4">
                 <input
                   name="isActive"
                   type="checkbox"
@@ -202,57 +237,91 @@ export function AdminUsersPage() {
                   onChange={(event) =>
                     setAdminForm((current) => ({ ...current, isActive: event.target.checked }))
                   }
+                  className="h-5 w-5 accent-[var(--color-accent)]"
                 />
-                <span>Active access</span>
+                <span className="text-sm font-medium">Active access</span>
               </label>
 
-              {adminError ? <p className={styles.error}>{adminError}</p> : null}
-              {adminSuccess ? <p className={styles.success}>{adminSuccess}</p> : null}
+              {adminError ? (
+                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-200">
+                  {adminError}
+                </div>
+              ) : null}
 
-              <Button type="submit" color="primary" isDisabled={savingAdmins}>
-                {savingAdmins ? <Spinner size="sm" /> : editingAdminId ? <NotePencil size={18} weight="bold" /> : <Plus size={18} weight="bold" />}
-                {editingAdminId ? 'Update admin' : 'Create admin'}
+              {adminSuccess ? (
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-950 dark:bg-emerald-950/30 dark:text-emerald-200">
+                  {adminSuccess}
+                </div>
+              ) : null}
+
+              <Button type="submit" disabled={savingAdmins} className="w-full">
+                {editingAdminId ? <NotePencil size={18} weight="bold" /> : <Plus size={18} weight="bold" />}
+                {savingAdmins ? 'Saving...' : editingAdminId ? 'Update admin' : 'Create admin'}
               </Button>
             </form>
-          </Card.Content>
+          </CardContent>
         </Card>
 
-        <Card className={styles.card}>
-          <Card.Content>
-            <div className={styles.sectionHeader}>
+        <Card className="bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(255,255,255,0.78))] dark:bg-[linear-gradient(180deg,rgba(24,24,27,0.96),rgba(24,24,27,0.88))]">
+          <CardHeader className="gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="space-y-2">
+              <Badge variant="secondary">
+                <UserGear size={14} weight="fill" />
+                Access list
+              </Badge>
               <div>
-                <span className={styles.sectionKicker}>
-                  <UserGear size={16} weight="fill" />
-                  Access list
-                </span>
-                <h3>All admin users</h3>
+                <CardTitle className="text-2xl">All admin users</CardTitle>
+                <CardDescription>
+                  Audit active access, update roles, and remove accounts you no longer want in the
+                  panel.
+                </CardDescription>
               </div>
-              <Chip variant="flat">{adminUsers.length}</Chip>
             </div>
+            <Badge variant="outline">{adminUsers.length} admins</Badge>
+          </CardHeader>
 
-            {loadingAdmins ? <div className={styles.state}>Loading admins...</div> : null}
+          <CardContent>
+            {loadingAdmins ? (
+              <div className="grid min-h-48 place-items-center rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-card-soft)] text-sm text-[var(--color-muted)]">
+                Loading admins...
+              </div>
+            ) : null}
+
             {!loadingAdmins && adminUsers.length === 0 ? (
-              <div className={styles.state}>No admin users yet.</div>
+              <div className="grid min-h-48 place-items-center rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-card-soft)] text-sm text-[var(--color-muted)]">
+                No admin users yet.
+              </div>
             ) : null}
 
             {!loadingAdmins && adminUsers.length > 0 ? (
-              <div className={styles.itemList}>
+              <div className="space-y-4">
                 {adminUsers.map((adminUser) => (
-                  <article key={adminUser.uid} className={styles.itemCard}>
-                    <div className={styles.mediaSummary}>
-                      <div className={styles.previewFallback}>
-                        <UserGear size={22} weight="duotone" />
+                  <article
+                    key={adminUser.uid}
+                    className="grid gap-4 rounded-3xl border border-[var(--color-border)] bg-[var(--color-panel-bg)] p-4"
+                  >
+                    <div className="grid gap-4 md:grid-cols-[84px_minmax(0,1fr)]">
+                      <div className="grid h-20 w-20 place-items-center rounded-2xl bg-[var(--color-surface-alt)] text-[var(--color-accent)]">
+                        <UserGear size={24} weight="duotone" />
                       </div>
 
-                      <div className={styles.itemInfo}>
-                        <div className={styles.itemTop}>
-                          <strong>{adminUser.name}</strong>
-                          <span className={styles.uidText}>{adminUser.uid}</span>
+                      <div className="space-y-3">
+                        <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                          <div>
+                            <p className="font-semibold">{adminUser.name}</p>
+                            <p className="text-sm text-[var(--color-muted)]">{adminUser.email}</p>
+                          </div>
+                          <p className="max-w-full truncate text-sm font-medium text-[var(--color-accent)] md:max-w-64">
+                            {adminUser.uid}
+                          </p>
                         </div>
-                        <p>{adminUser.email}</p>
-                        <div className={styles.metaRow}>
-                          <Chip variant="flat">{adminUser.role}</Chip>
-                          <Chip color={adminUser.isActive ? 'success' : 'danger'} variant="flat">
+
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="outline">{adminUser.role}</Badge>
+                          <Badge
+                            variant="outline"
+                            className={cn(getStatusBadgeClass(adminUser.isActive))}
+                          >
                             {adminUser.isActive ? (
                               <>
                                 <CheckCircle size={14} weight="fill" />
@@ -264,29 +333,28 @@ export function AdminUsersPage() {
                                 Disabled
                               </>
                             )}
-                          </Chip>
+                          </Badge>
                         </div>
                       </div>
                     </div>
 
-                    <div className={styles.actions}>
-                      <Button variant="bordered" onClick={() => startEditingAdmin(adminUser)}>
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="outline" onClick={() => startEditingAdmin(adminUser)}>
                         <NotePencil size={16} weight="bold" />
                         Edit
                       </Button>
                       <Button
-                        variant="bordered"
+                        variant="outline"
+                        disabled={savingAdmins}
                         onClick={() => handleAdminToggle(adminUser.uid, adminUser.isActive)}
-                        isDisabled={savingAdmins}
                       >
                         <CaretRight size={16} weight="bold" />
                         {adminUser.isActive ? 'Disable' : 'Activate'}
                       </Button>
                       <Button
-                        color="danger"
-                        variant="light"
+                        variant="destructive"
+                        disabled={savingAdmins}
                         onClick={() => handleAdminDelete(adminUser.uid)}
-                        isDisabled={savingAdmins}
                       >
                         <Trash size={16} weight="bold" />
                         Delete
@@ -296,7 +364,7 @@ export function AdminUsersPage() {
                 ))}
               </div>
             ) : null}
-          </Card.Content>
+          </CardContent>
         </Card>
       </div>
     </section>

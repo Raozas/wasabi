@@ -70,6 +70,7 @@ export function HomePage() {
         title="Best selling"
         description="A top row of products surfaced from the public catalog using a stable storefront sort."
         products={bestSelling}
+        gridSize="small"
         loading={loading}
         error={error}
         emptyMessage="No best selling products are available yet."
@@ -82,6 +83,7 @@ export function HomePage() {
         title="Our products"
         description="More live products from the storefront catalog."
         products={allProducts.length > 0 ? allProducts : bestSelling}
+        gridSize="small"
         loading={loading}
         error={error}
         emptyMessage="No products are available yet."

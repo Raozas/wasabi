@@ -1,10 +1,24 @@
-import { Button, Card, Chip, Input, Spinner, TextArea } from '@heroui/react'
-import { ArrowLeft, NotePencil, Package, Plus, UploadSimple } from '@phosphor-icons/react'
+import {
+  ArrowLeft,
+  NotePencil,
+  Plus,
+  UploadSimple,
+} from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Badge } from '../components/ui/badge'
+import { Button } from '../components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Textarea } from '../components/ui/textarea'
 import { createProduct, getProductById, updateProduct } from '../services/firestore/products'
 import { uploadProductImage } from '../services/storage/product-images'
-import styles from './AdminProductEditorPage.module.css'
 
 const INITIAL_PRODUCT_FORM = {
   category: '',
@@ -15,11 +29,11 @@ const INITIAL_PRODUCT_FORM = {
   shortDescription: '',
 }
 
-function Field({ children, label, hint }) {
+function Field({ children, hint, label }) {
   return (
-    <label className={styles.field}>
-      <span className={styles.fieldLabel}>{label}</span>
-      {hint ? <span className={styles.fieldHint}>{hint}</span> : null}
+    <label className="grid gap-2">
+      <span className="text-sm font-medium">{label}</span>
+      {hint ? <span className="text-sm text-[var(--color-muted)]">{hint}</span> : null}
       {children}
     </label>
   )
@@ -140,36 +154,45 @@ export function AdminProductEditorPage() {
   }
 
   return (
-    <section className={styles.page}>
-      <div className={styles.topBar}>
-        <Button variant="light" onClick={() => navigate('/admin')}>
-          <ArrowLeft size={18} weight="bold" />
-          Back to products
-        </Button>
-      </div>
+    <section className="space-y-6">
+      <Button className="w-fit" variant="ghost" onClick={() => navigate('/admin')}>
+        <ArrowLeft size={18} weight="bold" />
+        Back to products
+      </Button>
 
-      <Card className={styles.editorCard}>
-        <Card.Content className={styles.editorContent}>
-          <div className={styles.hero}>
-            <div className={styles.badges}>
-              <Chip color={isEditing ? 'warning' : 'primary'} variant="flat">
-                {isEditing ? <NotePencil size={16} weight="fill" /> : <Plus size={16} weight="bold" />}
-                {pageMeta.badge}
-              </Chip>
-              <Chip variant="bordered">
-                {isEditing ? 'Editing mode' : 'Creation mode'}
-              </Chip>
-            </div>
-            <h2 className={styles.title}>{pageMeta.heading}</h2>
-            <p className={styles.copy}>{pageMeta.subtitle}</p>
+      <Card className="bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(255,255,255,0.78))] dark:bg-[linear-gradient(180deg,rgba(24,24,27,0.96),rgba(24,24,27,0.88))]">
+        <CardHeader className="space-y-4">
+          <div className="flex flex-wrap gap-3">
+            <Badge
+              variant={isEditing ? 'outline' : 'default'}
+              className={isEditing ? 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200' : ''}
+            >
+              {pageMeta.actionIcon}
+              {pageMeta.badge}
+            </Badge>
+            <Badge variant="outline">{isEditing ? 'Editing mode' : 'Creation mode'}</Badge>
           </div>
 
+          <div>
+            <CardTitle className="text-3xl">{pageMeta.heading}</CardTitle>
+            <CardDescription className="mt-2 max-w-3xl">
+              {pageMeta.subtitle}
+            </CardDescription>
+          </div>
+        </CardHeader>
+
+        <CardContent>
           {loadingProduct ? (
-            <div className={styles.state}>Loading product...</div>
+            <div className="grid min-h-56 place-items-center rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-card-soft)] text-sm text-[var(--color-muted)]">
+              Loading product...
+            </div>
           ) : (
-            <form className={styles.form} onSubmit={handleSubmit}>
-              <div className={styles.formGrid}>
-                <Field label="Product name" hint="Use the storefront-facing title customers will see first.">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div className="grid gap-6">
+                <Field
+                  label="Product name"
+                  hint="Use the storefront-facing title customers will see first."
+                >
                   <Input
                     value={productForm.name}
                     onChange={(event) =>
@@ -180,7 +203,7 @@ export function AdminProductEditorPage() {
                   />
                 </Field>
 
-                <div className={styles.inlineGrid}>
+                <div className="grid gap-6 md:grid-cols-2">
                   <Field label="Price" hint="Storefront price in UZS.">
                     <Input
                       type="number"
@@ -211,7 +234,8 @@ export function AdminProductEditorPage() {
                   label="Description"
                   hint="Keep it informative and polished. The public card UI will trim long text automatically."
                 >
-                  <TextArea
+                  <Textarea
+                    rows={6}
                     value={productForm.shortDescription}
                     onChange={(event) =>
                       setProductForm((current) => ({
@@ -220,37 +244,41 @@ export function AdminProductEditorPage() {
                       }))
                     }
                     placeholder="Describe what makes this product useful and trustworthy."
-                    minRows={5}
                     required
                   />
                 </Field>
 
-                <Field label="Photo URL" hint="Optional direct image URL if you already have hosted media.">
-                  <Input
-                    type="url"
-                    value={productForm.photoUrl}
-                    onChange={(event) =>
-                      setProductForm((current) => ({ ...current, photoUrl: event.target.value }))
-                    }
-                    placeholder="https://..."
-                  />
-                </Field>
-
-                <Field label="Upload image" hint="You can upload a new image instead of using a remote URL.">
-                  <div className={styles.uploadField}>
-                    <UploadSimple size={18} weight="bold" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
+                <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
+                  <Field label="Photo URL" hint="Optional direct image URL if you already have hosted media.">
+                    <Input
+                      type="url"
+                      value={productForm.photoUrl}
+                      onChange={(event) =>
+                        setProductForm((current) => ({ ...current, photoUrl: event.target.value }))
+                      }
+                      placeholder="https://..."
                     />
-                  </div>
-                </Field>
+                  </Field>
 
-                <label className={styles.toggleCard}>
+                  <Field label="Upload image" hint="Upload a new image instead of using a remote URL.">
+                    <div className="flex items-center gap-3 rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-panel-bg)] px-4 py-4">
+                      <UploadSimple size={18} weight="bold" className="text-[var(--color-accent)]" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
+                        className="w-full text-sm"
+                      />
+                    </div>
+                  </Field>
+                </div>
+
+                <label className="flex items-center justify-between gap-6 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel-bg)] p-4">
                   <div>
-                    <strong>Available for storefront</strong>
-                    <p>Turn this on when the product should be visible to public users.</p>
+                    <p className="font-semibold">Available for storefront</p>
+                    <p className="text-sm text-[var(--color-muted)]">
+                      Turn this on when the product should be visible to public users.
+                    </p>
                   </div>
                   <input
                     name="isAvailable"
@@ -262,24 +290,29 @@ export function AdminProductEditorPage() {
                         isAvailable: event.target.checked,
                       }))
                     }
+                    className="h-5 w-5 shrink-0 accent-[var(--color-accent)]"
                   />
                 </label>
               </div>
 
-              {productError ? <p className={styles.error}>{productError}</p> : null}
+              {productError ? (
+                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-200">
+                  {productError}
+                </div>
+              ) : null}
 
-              <div className={styles.formActions}>
-                <Button variant="light" onClick={() => navigate('/admin')} isDisabled={savingProduct}>
+              <div className="flex flex-wrap justify-end gap-3">
+                <Button variant="ghost" disabled={savingProduct} onClick={() => navigate('/admin')}>
                   Cancel
                 </Button>
-                <Button type="submit" color="primary" isDisabled={savingProduct}>
-                  {savingProduct ? <Spinner size="sm" /> : pageMeta.actionIcon}
-                  {pageMeta.actionLabel}
+                <Button type="submit" disabled={savingProduct}>
+                  {pageMeta.actionIcon}
+                  {savingProduct ? 'Saving...' : pageMeta.actionLabel}
                 </Button>
               </div>
             </form>
           )}
-        </Card.Content>
+        </CardContent>
       </Card>
     </section>
   )

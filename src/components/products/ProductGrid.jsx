@@ -5,7 +5,7 @@ function joinClassNames(...values) {
   return values.filter(Boolean).join(' ')
 }
 
-export function ProductGrid({ products, cardSize = 'default' }) {
+export function ProductGrid({ products, cardSize = 'small' }) {
   return (
     <div className={joinClassNames(styles.grid, styles[`grid${cardSize[0].toUpperCase()}${cardSize.slice(1)}`])}>
       {products.map((product) => (

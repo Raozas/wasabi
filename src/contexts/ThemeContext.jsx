@@ -38,6 +38,7 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     document.documentElement.dataset.theme = themeMode
     document.documentElement.dataset.darkVariant = darkThemeVariant
+    document.documentElement.classList.toggle('dark', themeMode === 'dark')
     window.localStorage.setItem(THEME_MODE_STORAGE_KEY, themeMode)
     window.localStorage.setItem(DARK_THEME_STORAGE_KEY, darkThemeVariant)
   }, [darkThemeVariant, themeMode])

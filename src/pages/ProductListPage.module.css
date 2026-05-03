@@ -1,37 +1,90 @@
 .page {
   display: grid;
   gap: 26px;
-}
-
-.hero {
-  border: 1px solid var(--color-border);
-  border-radius: 30px;
-  background:
-    radial-gradient(circle at top right, rgba(245, 110, 78, 0.14), transparent 32%),
-    var(--color-surface);
-  box-shadow: var(--shadow-soft);
-}
-
-.heroContent {
-  display: grid;
-  gap: 1rem;
-  padding: clamp(18px, 3vw, 28px);
+  padding-bottom: 120px;
 }
 
 .basketLink {
-  justify-self: flex-start;
+  position: fixed;
+  right: clamp(16px, 3vw, 40px);
+  bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 20;
+  padding-inline: 8px;
+  min-width: 76px;
+  min-height: 56px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
 }
 
-.eyebrow {
-  justify-self: flex-start;
+.basketLink:hover,
+.basketLink:focus-visible {
+  transform: translateY(-1px);
 }
 
-.title {
-  margin: 0 0 12px;
+.basketLinkIdle {
+  background: var(--color-accent);
+  border-color: rgba(245, 110, 78, 0.72);
+  color: var(--color-on-accent);
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
+  min-height: 68px;
+  padding-inline: 0;
 }
 
-.copy {
-  max-width: 60ch;
-  margin: 0;
-  color: var(--color-muted);
+.basketLinkIdle:hover,
+.basketLinkIdle:focus-visible {
+  background: #ff8a65;
+  border-color: #ff8a65;
+  color: var(--color-on-accent);
+}
+
+.basketLinkActive {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(245, 110, 78, 0.24);
+  color: var(--color-accent);
+  backdrop-filter: blur(14px);
+  padding-left: 10px;
+}
+
+.basketLinkActive:hover,
+.basketLinkActive:focus-visible {
+  background: #fff2ec;
+  border-color: rgba(245, 110, 78, 0.38);
+  color: #e36242;
+}
+
+.basketCount {
+  min-width: 30px;
+  font-weight: 800;
+  line-height: 1;
+  margin-right: 10px;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding-bottom: 104px;
+  }
+
+  .basketLink {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .basketLinkActive {
+    right: 12px;
+    left: 12px;
+    justify-content: center;
+  }
 }

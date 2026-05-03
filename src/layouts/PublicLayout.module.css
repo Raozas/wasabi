@@ -82,6 +82,9 @@
 .toolsBar {
   margin: 22px auto 0;
   max-width: 1320px;
+  position: sticky;
+  top: 110px;
+  z-index: 9;
 }
 
 .content {
@@ -101,6 +104,10 @@
   .actions {
     justify-content: space-between;
   }
+
+  .toolsBar {
+    top: 154px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -119,5 +126,9 @@
 
   .navButton {
     flex: 1 1 calc(50% - 8px);
+  }
+
+  .toolsBar {
+    top: 144px;
   }
 }
