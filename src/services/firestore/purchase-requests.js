@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
@@ -35,6 +36,16 @@ export async function listPurchaseRequests() {
   return snapshot.docs.map(mapPurchaseRequestSnapshot)
 }
 
+export async function getPurchaseRequest(requestId) {
+  const snapshot = await getDoc(purchaseRequestDocument(requestId))
+
+  if (!snapshot.exists()) {
+    return null
+  }
+
+  return mapPurchaseRequestSnapshot(snapshot)
+}
+
 export async function createPurchaseRequest(input) {
   const documentRef = await addDoc(purchaseRequestsCollection(), createPurchaseRequestDocument(input))
   return documentRef.id
@@ -47,5 +58,11 @@ export async function updatePurchaseRequestStatus(requestId, status) {
 export async function updatePurchaseRequestNotes(requestId, notes) {
   await updateDoc(purchaseRequestDocument(requestId), {
     notes: String(notes ?? '').trim(),
+  })
+}
+
+export async function updatePurchaseRequestConversationResult(requestId, conversationResult) {
+  await updateDoc(purchaseRequestDocument(requestId), {
+    conversationResult: String(conversationResult ?? '').trim(),
   })
 }

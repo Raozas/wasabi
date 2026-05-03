@@ -2,6 +2,7 @@ import { serverTimestamp } from 'firebase/firestore'
 
 export function createPurchaseRequestDocument(input) {
   return {
+    conversationResult: String(input.conversationResult ?? '').trim(),
     contactInfo: String(input.contactInfo ?? '').trim(),
     customerName: String(input.customerName ?? '').trim(),
     instagramUsername: String(input.instagramUsername ?? '').trim(),

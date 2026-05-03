@@ -4,6 +4,7 @@ import { SuperadminRoute } from '../components/auth/SuperadminRoute'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { PublicLayout } from '../layouts/PublicLayout'
 import { AdminContactsPage } from '../pages/AdminContactsPage'
+import { AdminContactDetailPage } from '../pages/AdminContactDetailPage'
 import { AdminDashboardPage } from '../pages/AdminDashboardPage'
 import { AdminProductEditorPage } from '../pages/AdminProductEditorPage'
 import { AdminProductImportPage } from '../pages/AdminProductImportPage'
@@ -31,6 +32,7 @@ export function AppRouter() {
         <Route element={<AdminLayout />}>
           <Route path="admin" element={<AdminDashboardPage />} />
           <Route path="admin/contacts" element={<AdminContactsPage />} />
+          <Route path="admin/contacts/:requestId" element={<AdminContactDetailPage />} />
           <Route path="admin/products/new" element={<AdminProductEditorPage />} />
           <Route path="admin/products/:productId/edit" element={<AdminProductEditorPage />} />
           <Route path="admin/products/import" element={<AdminProductImportPage />} />

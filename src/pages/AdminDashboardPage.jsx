@@ -1,7 +1,6 @@
 import {
   CheckCircle,
   NotePencil,
-  Package,
   Plus,
   Rows,
   Trash,
@@ -31,7 +30,6 @@ import { cn } from '../lib/utils'
 import { ProductImage } from '../components/products/ProductImage'
 import { formatPrice } from '../features/products/product.utils'
 import { deleteProduct, listProducts } from '../services/firestore/products'
-import { color } from 'framer-motion'
 
 function truncateText(value, maxLength) {
   const normalized = String(value ?? '').trim()
@@ -147,7 +145,7 @@ export function AdminDashboardPage() {
               Import CSV
             </Button>
             <Button variant="outline" onClick={() => navigate('/admin/products/new')}>
-              <Plus size={18} weight="bold"  />
+              <Plus size={18} weight="bold" />
               New product
             </Button>
           </div>
@@ -167,22 +165,22 @@ export function AdminDashboardPage() {
           ) : null}
 
           {loadingProducts ? (
-            <div className="grid min-h-48 place-items-center rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-card-soft)] text-sm text-[var(--color-muted)]">
+            <div className="grid min-h-48 place-items-center rounded-2xl border border-dashed border-(--color-border) bg-(--color-card-soft) text-sm text-(--color-muted)">
               Loading products...
             </div>
           ) : null}
 
           {!loadingProducts && products.length === 0 ? (
-            <div className="grid min-h-48 place-items-center rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-card-soft)] text-sm text-[var(--color-muted)]">
+            <div className="grid min-h-48 place-items-center rounded-2xl border border-dashed border-(--color-border) bg-(--color-card-soft) text-sm text-(--color-muted)">
               No products yet.
             </div>
           ) : null}
 
           {!loadingProducts && products.length > 0 ? (
-            <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel-bg)]">
+            <div className="overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-panel-bg)">
               <div className="overflow-x-auto">
-                <Table className="min-w-[960px]">
-                  <TableHeader className="bg-[var(--color-surface-strong)]">
+                <Table className="min-w-240">
+                  <TableHeader className="bg-(--color-surface-strong)">
                     <TableRow className="hover:bg-transparent">
                       <TableHead>Product</TableHead>
                       <TableHead>Category</TableHead>
@@ -206,7 +204,7 @@ export function AdminDashboardPage() {
                             />
                             <div className="min-w-0">
                               <p className="truncate font-semibold">{product.name}</p>
-                              <p className="truncate text-xs text-[var(--color-muted)]">
+                              <p className="truncate text-xs text-(--color-muted)">
                                 {product.id}
                               </p>
                             </div>
@@ -215,7 +213,7 @@ export function AdminDashboardPage() {
                         <TableCell>
                           <Badge variant="outline">{product.category}</Badge>
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-semibold text-[var(--color-accent)]">
+                        <TableCell className="whitespace-nowrap font-semibold text-(--color-accent)">
                           {formatPrice(product.price)}
                         </TableCell>
                         <TableCell>
@@ -240,7 +238,7 @@ export function AdminDashboardPage() {
                             )}
                           </Badge>
                         </TableCell>
-                        <TableCell className="max-w-xs text-[var(--color-muted)]">
+                        <TableCell className="max-w-xs text-(--color-muted)">
                           {truncateText(product.shortDescription, 52)}
                         </TableCell>
                         <TableCell>

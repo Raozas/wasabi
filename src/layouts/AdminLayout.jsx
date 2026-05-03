@@ -1,63 +1,11 @@
-import {
-  ChartPieSlice,
-  ChatCircleDots,
-  GearSix,
-  House,
-  Package,
-  UploadSimple,
-  UsersThree,
-} from '@phosphor-icons/react'
+import { Package } from '@phosphor-icons/react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Avatar, AvatarFallback } from '../components/ui/avatar'
+import { AppSidebar } from '../components/admin/app-sidebar'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarRail,
-  SidebarSeparator,
-  SidebarTrigger,
-} from '../components/ui/sidebar'
-import { cn } from '../lib/utils'
+import { Separator } from '../components/ui/separator'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '../components/ui/sidebar'
 import { useAuth } from '../hooks/useAuth'
-
-const ADMIN_NAV_ITEMS = [
-  {
-    description: 'Inventory, pricing, and product activity',
-    icon: ChartPieSlice,
-    label: 'Dashboard',
-    to: '/admin',
-  },
-  {
-    description: 'Incoming customer purchase requests',
-    icon: ChatCircleDots,
-    label: 'Contacts',
-    to: '/admin/contacts',
-  },
-  {
-    description: 'Bulk product creation from CSV',
-    icon: UploadSimple,
-    label: 'Import',
-    to: '/admin/products/import',
-  },
-  {
-    description: 'Theme, access, and workspace preferences',
-    icon: GearSix,
-    label: 'Settings',
-    to: '/admin/settings',
-  },
-]
 
 const PAGE_META = {
   '/admin': {
@@ -82,13 +30,32 @@ const PAGE_META = {
   },
 }
 
-function getInitials(value) {
-  return String(value ?? '')
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('') || 'A'
+function getCurrentMeta(pathname) {
+  if (pathname.startsWith('/admin/contacts/')) {
+    return {
+      description: 'Review the selected request, save notes, and track the conversation outcome.',
+      title: 'Request detail',
+    }
+  }
+
+  if (pathname.startsWith('/admin/products/') && pathname.endsWith('/edit')) {
+    return {
+      description: 'Update product content, pricing, media, and storefront visibility.',
+      title: 'Edit product',
+    }
+  }
+
+  if (pathname === '/admin/products/new') {
+    return {
+      description: 'Create a new product for the storefront and prepare it for publishing.',
+      title: 'New product',
+    }
+  }
+
+  return PAGE_META[pathname] ?? {
+    description: 'Manage products, users, and storefront operations.',
+    title: 'Wasabi control',
+  }
 }
 
 export function AdminLayout() {
@@ -96,147 +63,43 @@ export function AdminLayout() {
   const navigate = useNavigate()
   const { adminProfile, isSuperadmin, user } = useAuth()
 
-  const navItems = isSuperadmin
-    ? [
-        ...ADMIN_NAV_ITEMS,
-        {
-          description: 'Create, edit, and disable admin accounts',
-          icon: UsersThree,
-          label: 'Admins',
-          to: '/admin/users',
-        },
-      ]
-    : ADMIN_NAV_ITEMS
-
-  const currentMeta = PAGE_META[location.pathname] ?? {
-    description: 'Manage products, users, and storefront operations.',
-    title: 'Wasabi control',
-  }
+  const currentMeta = getCurrentMeta(location.pathname)
 
   return (
     <SidebarProvider>
-      <Sidebar
-        variant="inset"
-        collapsible="icon"
-        className="border-none"
-      >
-        <SidebarHeader className="gap-3 p-3">
-          <div className="rounded-xl border border-sidebar-border bg-sidebar p-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sidebar-foreground/60">
-                  Admin workspace
-                </p>
-              </div>
-              <Badge variant="secondary">{adminProfile?.role ?? 'admin'}</Badge>
+      <AppSidebar
+        adminProfile={adminProfile}
+        isSuperadmin={isSuperadmin}
+        pathname={location.pathname}
+        user={user}
+        onNavigate={navigate}
+      />
+
+      <SidebarInset className="min-h-screen bg-transparent [--header-height:calc(--spacing(14))]">
+        <header className="sticky top-0 z-20 flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+          <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mx-2 data-[orientation=vertical]:h-4"
+            />
+            <div className="min-w-0">
+              <h1 className="truncate text-base font-medium">{currentMeta.title}</h1>
+              <p className="hidden text-sm text-(--color-muted) lg:block">
+                {currentMeta.description}
+              </p>
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              <Badge variant="outline">{isSuperadmin ? 'Superadmin access' : 'Admin access'}</Badge>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/admin/products/new')}>
+                <Package size={16} weight="duotone" />
+                New product
+              </Button>
             </div>
           </div>
+        </header>
 
-          <div className="rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12 rounded-2xl">
-                <AvatarFallback className="rounded-2xl bg-[var(--color-accent-soft)] text-[var(--color-accent)]">
-                  {getInitials(adminProfile?.name || user?.email || 'Admin')}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <p className="truncate font-semibold text-sidebar-foreground">
-                  {adminProfile?.name || 'Admin user'}
-                </p>
-                <p className="truncate text-sm text-sidebar-foreground/70">
-                  {adminProfile?.email || user?.email || user?.uid}
-                </p>
-              </div>
-            </div>
-          </div>
-        </SidebarHeader>
-
-        <SidebarSeparator />
-
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {navItems.map((item) => {
-                  const isActive = item.to === '/admin'
-                    ? location.pathname === '/admin'
-                    : location.pathname.startsWith(item.to)
-
-                  return (
-                    <SidebarMenuItem key={item.to}>
-                      <SidebarMenuButton
-                        isActive={isActive}
-                        tooltip={item.label}
-                        className={cn(
-                          'h-auto min-h-12 items-start py-3',
-                          isActive && 'bg-[var(--color-accent)] text-[var(--color-on-accent)] hover:bg-[var(--color-accent)] hover:text-[var(--color-on-accent)]',
-                        )}
-                        onClick={() => navigate(item.to)}
-                      >
-                        <item.icon
-                          size={18}
-                          weight="duotone"
-                          className={cn(
-                            'mt-0.5 shrink-0',
-                            isActive ? 'text-[var(--color-on-accent)]' : 'text-[var(--color-accent)]',
-                          )}
-                        />
-                        <span className="min-w-0">
-                          <span className="block text-sm font-semibold">{item.label}</span>
-                          <span
-                            className={cn(
-                              'mt-1 block text-xs leading-5',
-                              isActive ? 'text-[color:rgba(255,255,255,0.82)]' : 'text-sidebar-foreground/65',
-                            )}
-                          >
-                            {item.description}
-                          </span>
-                        </span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  )
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-
-        <SidebarFooter className="p-3">
-          <Button className="w-full justify-start" variant="outline" onClick={() => navigate('/')}>
-            <House size={18} weight="duotone" />
-            Open storefront
-          </Button>
-        </SidebarFooter>
-
-        <SidebarRail />
-      </Sidebar>
-
-      <SidebarInset className="min-h-screen bg-transparent">
-        <div className="space-y-6 px-4 py-4 md:px-6">
-          <Card className="sticky top-4 z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,255,255,0.86))] backdrop-blur dark:bg-[linear-gradient(180deg,rgba(24,24,27,0.96),rgba(24,24,27,0.9))]">
-            <CardContent className="flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-start gap-3">
-                <SidebarTrigger className="mt-1 md:hidden" />
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">
-                    Admin panel
-                  </p>
-                  <h1 className="text-2xl font-semibold tracking-tight">{currentMeta.title}</h1>
-                  <p className="text-sm text-[var(--color-muted)]">{currentMeta.description}</p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <Badge variant="outline">{isSuperadmin ? 'Superadmin access' : 'Admin access'}</Badge>
-                <Button variant="secondary" onClick={() => navigate('/admin/products/new')}>
-                  <Package size={18} weight="duotone" />
-                  New product
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
+        <div className="px-4 py-4 md:px-6">
           <main className="min-w-0">
             <Outlet />
           </main>

@@ -36,6 +36,7 @@ function normalizeDate(value) {
 function buildRows(requests) {
   return requests.map((request) => ({
     contact: request.contactInfo ?? '',
+    conversationResult: request.conversationResult ?? '',
     createdAt: normalizeDate(request.createdAt),
     customer: request.customerName || 'Unnamed customer',
     instagram: request.instagramUsername || 'Not provided',
@@ -60,7 +61,7 @@ function triggerDownload(blob, fileName) {
 
 export function exportPurchaseRequestsCsv(requests) {
   const rows = buildRows(requests)
-  const headers = ['Customer', 'Contact', 'Instagram', 'Items', 'Total', 'Status', 'Notes', 'Order summary', 'Created at']
+  const headers = ['Customer', 'Contact', 'Instagram', 'Items', 'Total', 'Status', 'Conversation result', 'Notes', 'Order summary', 'Created at']
   const csvLines = [
     headers.join(','),
     ...rows.map((row) =>
@@ -71,6 +72,7 @@ export function exportPurchaseRequestsCsv(requests) {
         row.totalItems,
         row.totalPrice,
         row.status,
+        row.conversationResult,
         row.notes,
         row.orderSummary,
         row.createdAt,
@@ -206,7 +208,7 @@ function createZip(files) {
 }
 
 function buildSheetXml(rows) {
-  const headers = ['Customer', 'Contact', 'Instagram', 'Items', 'Total', 'Status', 'Notes', 'Order Summary', 'Created At']
+  const headers = ['Customer', 'Contact', 'Instagram', 'Items', 'Total', 'Status', 'Conversation Result', 'Notes', 'Order Summary', 'Created At']
   const data = [
     headers,
     ...rows.map((row) => [
@@ -216,6 +218,7 @@ function buildSheetXml(rows) {
       String(row.totalItems),
       row.totalPrice,
       row.status,
+      row.conversationResult,
       row.notes,
       row.orderSummary,
       row.createdAt,

@@ -35,17 +35,15 @@ export function UserMenu() {
 
   return (
     <Dropdown.Root>
-      <Dropdown.Trigger>
-        <Button variant="bordered" className={styles.trigger}>
-          <span className={styles.triggerInner}>
-            <Avatar size="sm" name={userName} />
-            <span className={styles.triggerText}>
-              <strong>{userName}</strong>
-              <span>{roleName}</span>
-            </span>
+      <Dropdown.Trigger className={styles.trigger}>
+        <span className={styles.triggerInner}>
+          <Avatar size="sm" name={userName} />
+          <span className={styles.triggerText}>
+            <strong>{userName}</strong>
+            <span>{roleName}</span>
           </span>
-          <ArrowSquareOut size={16} weight="bold" />
-        </Button>
+        </span>
+        <ArrowSquareOut size={16} weight="bold" />
       </Dropdown.Trigger>
       <Dropdown.Popover>
         <Dropdown.Menu
