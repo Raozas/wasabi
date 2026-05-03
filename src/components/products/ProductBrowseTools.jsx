@@ -1,55 +1,43 @@
-import { Card } from "@heroui/react";
-import { SlidersHorizontal } from "@phosphor-icons/react";
-import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useProducts } from "../../hooks/useProducts";
-import styles from "./ProductBrowseTools.module.css";
+import { Card } from '@heroui/react'
+import { SlidersHorizontal } from '@phosphor-icons/react'
+import { useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import {
+  PRODUCT_CATEGORY_OPTIONS,
+  formatProductCategoryLabel,
+} from '../../features/products/product-categories'
+import styles from './ProductBrowseTools.module.css'
 
 export function ProductBrowseTools() {
-  const { products } = useProducts({ publicOnly: true });
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedCategory = searchParams.get('category') ?? 'all'
 
-  const categoryMeta = useMemo(() => {
-    const counts = products.reduce((result, product) => {
-      const category = String(product.category ?? "").trim();
-      if (!category) return result;
-      result[category] = (result[category] ?? 0) + 1;
-      return result;
-    }, {});
+  const categoryOptions = useMemo(() => {
+    const options = [...PRODUCT_CATEGORY_OPTIONS]
 
-    return Object.entries(counts)
-      .map(([category, count]) => ({ category, count }))
-      .sort((left, right) => left.category.localeCompare(right.category));
-  }, [products]);
+    if (!options.includes(requestedCategory)) {
+      options.push(requestedCategory)
+    }
 
-  const requestedCategory = searchParams.get("category") ?? "all";
-  const activeCategory = useMemo(() => {
-    if (requestedCategory === "all") return "all";
-    return categoryMeta.some((item) => item.category === requestedCategory)
-      ? requestedCategory
-      : "all";
-  }, [categoryMeta, requestedCategory]);
+    return options
+  }, [requestedCategory])
 
   function updateSearchParams(updater) {
-    const nextSearchParams = new URLSearchParams(searchParams);
-    updater(nextSearchParams);
-    setSearchParams(nextSearchParams);
+    const nextSearchParams = new URLSearchParams(searchParams)
+    updater(nextSearchParams)
+    setSearchParams(nextSearchParams)
   }
 
   function handleCategoryChange(nextCategory) {
     updateSearchParams((nextSearchParams) => {
-      if (nextCategory === "all") {
-        nextSearchParams.delete("category");
+      if (nextCategory === 'all') {
+        nextSearchParams.delete('category')
       } else {
-        nextSearchParams.set("category", nextCategory);
+        nextSearchParams.set('category', nextCategory)
       }
-    });
+      nextSearchParams.delete('page')
+    })
   }
-
-  const allCategories = [
-    { category: "all", count: products.length },
-    ...categoryMeta,
-  ];
 
   return (
     <Card className={styles.panel}>
@@ -61,31 +49,26 @@ export function ProductBrowseTools() {
             </span>
             <span className={styles.label}>Categories</span>
             <span className={styles.labelDivider} />
-            <span className={styles.labelCount}>{categoryMeta.length} types</span>
+            <span className={styles.labelCount}>Quick filters</span>
           </div>
 
           <div className={styles.chips}>
-            {allCategories.map((item) => {
-              const isActive =
-                item.category === activeCategory ||
-                (item.category === "all" && activeCategory === "all");
+            {categoryOptions.map((category) => {
+              const isActive = category === requestedCategory
               return (
                 <button
-                  key={item.category}
+                  key={category}
                   type="button"
-                  className={`${styles.chip} ${isActive ? styles.chipActive : ""}`}
-                  onClick={() => handleCategoryChange(item.category)}
+                  className={`${styles.chip} ${isActive ? styles.chipActive : ''}`}
+                  onClick={() => handleCategoryChange(category)}
                 >
-                  <span className={styles.chipLabel}>
-                    {item.category === "all" ? "All" : item.category}
-                  </span>
-                  <span className={styles.chipBadge}>{item.count}</span>
+                  <span className={styles.chipLabel}>{formatProductCategoryLabel(category)}</span>
                 </button>
-              );
+              )
             })}
           </div>
         </div>
       </Card.Content>
     </Card>
-  );
+  )
 }

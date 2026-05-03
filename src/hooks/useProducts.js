@@ -1,12 +1,25 @@
 import { useEffect, useState } from 'react'
-import { listProducts } from '../services/firestore/products'
-import { isPublicProduct } from '../features/products/product.utils'
+import { listProductsPage, listPublicProductsPage } from '../services/firestore/products'
 
 export function useProducts(options = {}) {
-  const { publicOnly = false } = options
+  const {
+    category,
+    page = 1,
+    pageSize = 24,
+    publicOnly = false,
+    statusFilter = 'all',
+  } = options
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [pagination, setPagination] = useState({
+    hasNextPage: false,
+    hasPreviousPage: false,
+    page: 1,
+    pageSize,
+    totalCount: 0,
+    totalPages: 0,
+  })
 
   useEffect(() => {
     let cancelled = false
@@ -16,13 +29,29 @@ export function useProducts(options = {}) {
       setError('')
 
       try {
-        const nextProducts = await listProducts()
-        const resolvedProducts = publicOnly
-          ? nextProducts.filter((product) => isPublicProduct(product))
-          : nextProducts
+        const result = publicOnly
+          ? await listPublicProductsPage({
+              category,
+              page,
+              pageSize,
+            })
+          : await listProductsPage({
+              category,
+              page,
+              pageSize,
+              statusFilter,
+            })
 
         if (!cancelled) {
-          setProducts(resolvedProducts)
+          setPagination({
+            hasNextPage: result.hasNextPage,
+            hasPreviousPage: result.hasPreviousPage,
+            page: result.page,
+            pageSize: result.pageSize,
+            totalCount: result.totalCount,
+            totalPages: result.totalPages,
+          })
+          setProducts(result.items)
         }
       } catch (nextError) {
         if (!cancelled) {
@@ -41,11 +70,17 @@ export function useProducts(options = {}) {
     return () => {
       cancelled = true
     }
-  }, [publicOnly])
+  }, [category, page, pageSize, publicOnly, statusFilter])
 
   return {
     error,
+    hasNextPage: pagination.hasNextPage,
+    hasPreviousPage: pagination.hasPreviousPage,
     loading,
+    page: pagination.page,
+    pageSize: pagination.pageSize,
     products,
+    totalCount: pagination.totalCount,
+    totalPages: pagination.totalPages,
   }
 }

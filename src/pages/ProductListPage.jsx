@@ -1,5 +1,5 @@
 import { ShoppingCartSimple } from '@phosphor-icons/react'
-import { useMemo } from 'react'
+import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ProductCatalogSection } from '../components/products/ProductCatalogSection'
 import { useCart } from '../hooks/useCart'
@@ -13,57 +13,66 @@ function joinClassNames(...values) {
 export function ProductListPage() {
   const navigate = useNavigate()
   const { totalItems } = useCart()
-  const { error, loading, products } = useProducts({ publicOnly: true })
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedPage = Math.max(1, Number(searchParams.get('page') ?? 1) || 1)
   const selectedCategory = searchParams.get('category') ?? 'all'
+  const { error, loading, page, products, totalCount, totalPages } = useProducts({
+    category: selectedCategory === 'all' ? undefined : selectedCategory,
+    page: requestedPage,
+    pageSize: 24,
+    publicOnly: true,
+  })
 
-  const categoryMeta = useMemo(() => {
-    const counts = products.reduce((result, product) => {
-      const category = String(product.category ?? '').trim()
+  useEffect(() => {
+    const shouldClampToFirstPage = !loading && totalPages === 0 && requestedPage !== 1
+    const shouldClampToLastPage = !loading && totalPages > 0 && requestedPage > totalPages
 
-      if (!category) {
-        return result
+    if (shouldClampToFirstPage || shouldClampToLastPage) {
+      const nextSearchParams = new URLSearchParams(searchParams)
+
+      if (page <= 1) {
+        nextSearchParams.delete('page')
+      } else {
+        nextSearchParams.set('page', String(page))
       }
 
-      result[category] = (result[category] ?? 0) + 1
-      return result
-    }, {})
+      setSearchParams(nextSearchParams)
+    }
+  }, [loading, page, requestedPage, searchParams, setSearchParams, totalPages])
 
-    return Object.entries(counts)
-      .map(([category, count]) => ({ category, count }))
-      .sort((left, right) => left.category.localeCompare(right.category))
-  }, [products])
+  function handlePageChange(nextPage) {
+    const nextSearchParams = new URLSearchParams(searchParams)
 
-  const activeCategory = useMemo(() => {
-    if (selectedCategory === 'all') {
-      return 'all'
+    if (nextPage <= 1) {
+      nextSearchParams.delete('page')
+    } else {
+      nextSearchParams.set('page', String(nextPage))
     }
 
-    return categoryMeta.some((item) => item.category === selectedCategory) ? selectedCategory : 'all'
-  }, [categoryMeta, selectedCategory])
-
-  const visibleProducts = useMemo(() => {
-    if (activeCategory === 'all') {
-      return products
-    }
-
-    return products.filter((product) => product.category === activeCategory)
-  }, [activeCategory, products])
+    const nextQueryString = nextSearchParams.toString()
+    navigate(nextQueryString ? `/products?${nextQueryString}` : '/products')
+  }
 
   return (
     <section className={styles.page}>
       <ProductCatalogSection
         title="Catalog"
         description="Filtered public products from the storefront inventory."
-        products={visibleProducts}
+        products={products}
         gridSize="small"
         loading={loading}
         error={error}
         emptyMessage={
-          activeCategory === 'all'
+          selectedCategory === 'all'
             ? 'No public products are available yet.'
-            : `No products are available in ${activeCategory} right now.`
+            : `No products are available in ${selectedCategory} right now.`
         }
+        pagination={{
+          currentPage: page,
+          onPageChange: handlePageChange,
+          totalCount,
+          totalPages,
+        }}
       />
 
       <button

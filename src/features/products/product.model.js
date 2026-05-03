@@ -1,6 +1,7 @@
 import { serverTimestamp } from 'firebase/firestore'
 
 const DEFAULT_PRODUCT_VALUES = {
+  barcode: '',
   category: '',
   isAvailable: true,
   name: '',

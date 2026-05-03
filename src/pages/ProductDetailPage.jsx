@@ -8,12 +8,12 @@ import {
   Truck,
   XCircle,
 } from '@phosphor-icons/react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { ProductImage } from '../components/products/ProductImage'
 import { formatPrice, isPublicProduct } from '../features/products/product.utils'
 import { useCart } from '../hooks/useCart'
-import { useProducts } from '../hooks/useProducts'
+import { getProductById } from '../services/firestore/products'
 import styles from './ProductDetailPage.module.css'
 
 function buildGallery(product) {
@@ -30,18 +30,55 @@ export function ProductDetailPage() {
   const navigate = useNavigate()
   const { productId } = useParams()
   const { addToCart } = useCart()
-  const { error, loading, products } = useProducts({ publicOnly: true })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [product, setProduct] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
-  const product = useMemo(
-    () => products.find((item) => item.id === productId) ?? null,
-    [productId, products],
-  )
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadProduct() {
+      setLoading(true)
+      setError('')
+
+      try {
+        const nextProduct = await getProductById(productId)
+
+        if (!cancelled) {
+          setProduct(nextProduct)
+        }
+      } catch (nextError) {
+        if (!cancelled) {
+          setError(nextError instanceof Error ? nextError.message : 'Failed to load product.')
+          setProduct(null)
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    if (!productId) {
+      setLoading(false)
+      setProduct(null)
+      return () => {
+        cancelled = true
+      }
+    }
+
+    void loadProduct()
+
+    return () => {
+      cancelled = true
+    }
+  }, [productId])
 
   const gallery = useMemo(() => (product ? buildGallery(product) : []), [product])
 
-  if (!loading && !error && product === null && products.length > 0) {
+  if (!loading && !error && product === null) {
     return <Navigate to="/products" replace />
   }
 

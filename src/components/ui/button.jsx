@@ -44,14 +44,22 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  startContent,
+  endContent,
+  children,
   ...props
 }) {
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
-      {...props} />
-  );
+      {...props}
+    >
+      {startContent ? <span data-icon="inline-start">{startContent}</span> : null}
+      {children}
+      {endContent ? <span data-icon="inline-end">{endContent}</span> : null}
+    </ButtonPrimitive>
+  )
 }
 
 export { Button, buttonVariants }

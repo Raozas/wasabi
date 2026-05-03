@@ -11,7 +11,10 @@ import styles from './HomePage.module.css'
 export function HomePage() {
   const navigate = useNavigate()
   const { totalItems } = useCart()
-  const { error, loading, products } = useProducts({ publicOnly: true })
+  const { error, loading, products, totalCount } = useProducts({
+    pageSize: 8,
+    publicOnly: true,
+  })
   const { allProducts, bestSelling } = splitHomeSections(products)
 
   return (
@@ -47,7 +50,7 @@ export function HomePage() {
               </Button>
               <Chip className={styles.secondaryAction} variant="bordered">
                 <Sparkle size={16} weight="duotone" />
-                {loading ? 'Loading catalog...' : `${products.length} products available`}
+                {loading ? 'Loading catalog...' : `${totalCount} products available`}
               </Chip>
             </div>
           </div>

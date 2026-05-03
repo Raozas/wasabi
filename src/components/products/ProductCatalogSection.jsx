@@ -2,6 +2,7 @@ import { Button, Card, Spinner } from '@heroui/react'
 import { ArrowRight, Package } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
 import { ProductGrid } from './ProductGrid'
+import { PaginationControls } from '../ui/PaginationControls'
 import styles from './ProductCatalogSection.module.css'
 
 export function ProductCatalogSection({
@@ -15,6 +16,7 @@ export function ProductCatalogSection({
   ctaLabel,
   ctaTo,
   ctaIcon,
+  pagination,
 }) {
   const navigate = useNavigate()
 
@@ -52,7 +54,17 @@ export function ProductCatalogSection({
           <div className={styles.state}>{emptyMessage}</div>
         ) : null}
         {!loading && !error && products.length > 0 ? (
-          <ProductGrid products={products} cardSize={gridSize} />
+          <>
+            <ProductGrid products={products} cardSize={gridSize} />
+            {pagination ? (
+              <PaginationControls
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                totalCount={pagination.totalCount}
+                onPageChange={pagination.onPageChange}
+              />
+            ) : null}
+          </>
         ) : null}
       </Card.Content>
     </Card>

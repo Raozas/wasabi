@@ -129,6 +129,7 @@ export function parseProductCsv(text) {
 
     try {
       const name = sourceRow.name ?? ''
+      const barcode = sourceRow.barcode ?? ''
       const category = sourceRow.category ?? ''
       const shortDescription = sourceRow.shortdescription ?? ''
       const photoUrl = sourceRow.photourl ?? ''
@@ -152,6 +153,7 @@ export function parseProductCsv(text) {
       }
 
       const payloadInput = {
+        barcode,
         category,
         name,
         photoUrl,

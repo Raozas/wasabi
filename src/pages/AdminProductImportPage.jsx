@@ -93,10 +93,10 @@ export function AdminProductImportPage() {
               </div>
               <div className="space-y-1">
                 <p className="text-sm font-semibold">Optional columns</p>
-                <p className="text-sm text-[var(--color-muted)]">photoUrl, isAvailable</p>
+                <p className="text-sm text-[var(--color-muted)]">barcode, photoUrl, isAvailable</p>
               </div>
               <div className="overflow-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-strong)] px-3 py-2 font-mono text-xs text-[var(--color-muted)]">
-                name,price,category,shortDescription,photoUrl,isAvailable
+                name,barcode,price,category,shortDescription,photoUrl,isAvailable
               </div>
               <p className="text-sm text-[var(--color-muted)]">
                 Products without a photo remain visible with a placeholder. You can add or replace

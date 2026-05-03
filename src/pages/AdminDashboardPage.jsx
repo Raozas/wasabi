@@ -7,8 +7,8 @@ import {
   UploadSimple,
   XCircle,
 } from '@phosphor-icons/react'
-import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import {
@@ -28,8 +28,18 @@ import {
 } from '../components/ui/table'
 import { cn } from '../lib/utils'
 import { ProductImage } from '../components/products/ProductImage'
+import { PaginationControls } from '../components/ui/PaginationControls'
 import { formatPrice } from '../features/products/product.utils'
-import { deleteProduct, listProducts } from '../services/firestore/products'
+import {
+  deleteProduct,
+  getProductCountsSummary,
+  listProductsPage,
+} from '../services/firestore/products'
+
+function parsePage(value) {
+  const parsedPage = Number(value)
+  return Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1
+}
 
 function truncateText(value, maxLength) {
   const normalized = String(value ?? '').trim()
@@ -43,29 +53,79 @@ function truncateText(value, maxLength) {
 
 export function AdminDashboardPage() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const currentPage = parsePage(searchParams.get('page'))
   const [products, setProducts] = useState([])
   const [loadingProducts, setLoadingProducts] = useState(true)
   const [savingProducts, setSavingProducts] = useState(false)
   const [productError, setProductError] = useState('')
   const [productSuccess, setProductSuccess] = useState('')
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalCount: 0,
+    totalPages: 0,
+  })
+  const [productCounts, setProductCounts] = useState({
+    hiddenCount: 0,
+    liveCount: 0,
+    totalCount: 0,
+  })
 
-  useEffect(() => {
-    void loadProducts()
-  }, [])
+  const updateSearchParams = useCallback((updater) => {
+    const nextSearchParams = new URLSearchParams(searchParams)
+    updater(nextSearchParams)
+    setSearchParams(nextSearchParams)
+  }, [searchParams, setSearchParams])
 
-  async function loadProducts() {
+  const loadProducts = useCallback(async () => {
     setLoadingProducts(true)
     setProductError('')
 
     try {
-      const nextProducts = await listProducts()
-      setProducts(nextProducts)
+      const result = await listProductsPage({
+        page: currentPage,
+        pageSize: 25,
+      })
+
+      setProducts(result.items)
+      setPagination({
+        page: result.page,
+        totalCount: result.totalCount,
+        totalPages: result.totalPages,
+      })
+
+      if (result.page !== currentPage) {
+        updateSearchParams((nextSearchParams) => {
+          if (result.page <= 1) {
+            nextSearchParams.delete('page')
+          } else {
+            nextSearchParams.set('page', String(result.page))
+          }
+        })
+      }
     } catch (error) {
       setProductError(error instanceof Error ? error.message : 'Failed to load products.')
     } finally {
       setLoadingProducts(false)
     }
-  }
+  }, [currentPage, updateSearchParams])
+
+  const loadStats = useCallback(async () => {
+    try {
+      const nextStats = await getProductCountsSummary()
+      setProductCounts(nextStats)
+    } catch (error) {
+      setProductError(error instanceof Error ? error.message : 'Failed to load product stats.')
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadProducts()
+  }, [loadProducts])
+
+  useEffect(() => {
+    void loadStats()
+  }, [loadStats])
 
   async function handleProductDelete(productId) {
     setSavingProducts(true)
@@ -74,7 +134,22 @@ export function AdminDashboardPage() {
 
     try {
       await deleteProduct(productId)
-      await loadProducts()
+      await loadStats()
+
+      if (products.length === 1 && currentPage > 1) {
+        updateSearchParams((nextSearchParams) => {
+          const previousPage = currentPage - 1
+
+          if (previousPage <= 1) {
+            nextSearchParams.delete('page')
+          } else {
+            nextSearchParams.set('page', String(previousPage))
+          }
+        })
+      } else {
+        await loadProducts()
+      }
+
       setProductSuccess('Product deleted.')
     } catch (error) {
       setProductError(error instanceof Error ? error.message : 'Failed to delete product.')
@@ -84,29 +159,31 @@ export function AdminDashboardPage() {
   }
 
   const stats = useMemo(() => {
-    const liveCount = products.filter((product) => product.isAvailable).length
-    const hiddenCount = products.length - liveCount
-    const categories = new Set(products.map((product) => product.category).filter(Boolean))
-
     return [
       {
         label: 'Total products',
-        value: products.length,
+        value: productCounts.totalCount,
       },
       {
         label: 'Live products',
-        value: liveCount,
+        value: productCounts.liveCount,
       },
       {
         label: 'Hidden products',
-        value: hiddenCount,
-      },
-      {
-        label: 'Categories',
-        value: categories.size,
+        value: productCounts.hiddenCount,
       },
     ]
-  }, [products])
+  }, [productCounts.hiddenCount, productCounts.liveCount, productCounts.totalCount])
+
+  function handlePageChange(nextPage) {
+    updateSearchParams((nextSearchParams) => {
+      if (nextPage <= 1) {
+        nextSearchParams.delete('page')
+      } else {
+        nextSearchParams.set('page', String(nextPage))
+      }
+    })
+  }
 
   return (
     <section className="space-y-6">
@@ -179,21 +256,22 @@ export function AdminDashboardPage() {
           {!loadingProducts && products.length > 0 ? (
             <div className="overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-panel-bg)">
               <div className="overflow-x-auto">
-                <Table className="min-w-240">
+                <Table className="min-w-240 table-fixed">
                   <TableHeader className="bg-(--color-surface-strong)">
                     <TableRow className="hover:bg-transparent">
-                      <TableHead>Product</TableHead>
+                      <TableHead className="w-[18rem]">Product</TableHead>
                       <TableHead>Category</TableHead>
+                      <TableHead>Barcode</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Description</TableHead>
+                      <TableHead className="w-[16rem]">Description</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {products.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell>
+                        <TableCell className="w-[18rem] max-w-[18rem]">
                           <div className="flex items-center gap-3">
                             <ProductImage
                               className="h-12 w-12 rounded-xl object-cover"
@@ -202,8 +280,10 @@ export function AdminDashboardPage() {
                               alt={product.name}
                               iconSize={18}
                             />
-                            <div className="min-w-0">
-                              <p className="truncate font-semibold">{product.name}</p>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate font-semibold" title={product.name}>
+                                {product.name}
+                              </p>
                               <p className="truncate text-xs text-(--color-muted)">
                                 {product.id}
                               </p>
@@ -212,6 +292,9 @@ export function AdminDashboardPage() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">{product.category}</Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs text-(--color-muted)">
+                          {product.barcode || 'No barcode'}
                         </TableCell>
                         <TableCell className="whitespace-nowrap font-semibold text-(--color-accent)">
                           {formatPrice(product.price)}
@@ -238,8 +321,10 @@ export function AdminDashboardPage() {
                             )}
                           </Badge>
                         </TableCell>
-                        <TableCell className="max-w-xs text-(--color-muted)">
-                          {truncateText(product.shortDescription, 52)}
+                        <TableCell className="w-[16rem] max-w-[16rem] text-(--color-muted)">
+                          <p className="truncate" title={product.shortDescription}>
+                            {product.shortDescription}
+                          </p>
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-2">
@@ -264,6 +349,15 @@ export function AdminDashboardPage() {
                     ))}
                   </TableBody>
                 </Table>
+              </div>
+              <div className="px-4 py-4 sm:px-6">
+                <PaginationControls
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
+                  totalCount={pagination.totalCount}
+                  onPageChange={handlePageChange}
+                  disabled={loadingProducts || savingProducts}
+                />
               </div>
             </div>
           ) : null}

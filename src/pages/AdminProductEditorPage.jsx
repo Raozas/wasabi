@@ -21,6 +21,7 @@ import { createProduct, getProductById, updateProduct } from '../services/firest
 import { uploadProductImage } from '../services/storage/product-images'
 
 const INITIAL_PRODUCT_FORM = {
+  barcode: '',
   category: '',
   isAvailable: true,
   name: '',
@@ -69,6 +70,7 @@ export function AdminProductEditorPage() {
 
         if (!cancelled) {
           setProductForm({
+            barcode: product.barcode ?? '',
             category: product.category ?? '',
             isAvailable: Boolean(product.isAvailable),
             name: product.name ?? '',
@@ -122,6 +124,7 @@ export function AdminProductEditorPage() {
 
     try {
       const payload = {
+        barcode: productForm.barcode,
         category: productForm.category,
         isAvailable: productForm.isAvailable,
         name: productForm.name,
@@ -203,7 +206,20 @@ export function AdminProductEditorPage() {
                   />
                 </Field>
 
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <Field
+                    label="Barcode"
+                    hint="Recommended for matching Firebase products with supplier inventory."
+                  >
+                    <Input
+                      value={productForm.barcode}
+                      onChange={(event) =>
+                        setProductForm((current) => ({ ...current, barcode: event.target.value }))
+                      }
+                      placeholder="4902201183055"
+                    />
+                  </Field>
+
                   <Field label="Price" hint="Storefront price in UZS.">
                     <Input
                       type="number"

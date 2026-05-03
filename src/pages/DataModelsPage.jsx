@@ -4,11 +4,17 @@ import styles from './DataModelsPage.module.css'
 const productFields = [
   'id',
   'name',
+  'barcode',
   'price',
   'isAvailable',
   'category',
+  'subcategory',
   'photoUrl',
   'shortDescription',
+  'externalProductId',
+  'stock',
+  'prices',
+  'syncedAt',
   'createdAt',
   'updatedAt',
 ]
